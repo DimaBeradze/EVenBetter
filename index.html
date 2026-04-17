@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVen better — Accessory Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:    #2AB5A0;
+    --teal-dk: #1E9080;
+    --teal-lt: #E8F7F5;
+    --navy:    #1B2A3D;
+    --muted:   #6B7E96;
+    --border:  #E2E8EF;
+    --bg:      #F4F6F8;
+    --white:   #FFFFFF;
+    --orange:  #F5A623;
+    --green:   #34C77B;
+    --red:     #E05252;
+    --card-r:  16px;
+    --font:    'DM Sans', sans-serif;
+    --mono:    'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    box-shadow: 0 1px 12px rgba(0,0,0,.05);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 1.15rem; color: var(--navy);
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--teal);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo span { color: var(--teal); }
+
+  .nav-tabs {
+    display: flex; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .nav-tab {
+    padding: 7px 18px; font-size: .85rem; font-weight: 500;
+    background: transparent; border: none; cursor: pointer; color: var(--muted);
+    font-family: var(--font); transition: all .15s;
+  }
+  .nav-tab.active { background: var(--teal); color: #fff; }
+  .nav-tab:hover:not(.active) { background: var(--teal-lt); color: var(--teal); }
+
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .search-wrap {
+    position: relative;
+  }
+  .search-input {
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 8px 14px 8px 38px; font-size: .875rem; font-family: var(--font);
+    width: 240px; background: var(--bg); color: var(--navy); outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--teal); }
+  .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); pointer-events: none; font-size: 14px;
+  }
+
+  .cart-btn {
+    position: relative; background: var(--navy); color: #fff;
+    border: none; border-radius: 10px; padding: 8px 18px;
+    font-size: .875rem; font-weight: 600; font-family: var(--font);
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+    transition: background .15s; white-space: nowrap;
+  }
+  .cart-btn:hover { background: var(--teal); }
+  .cart-badge {
+    background: var(--teal); color: #fff; border-radius: 99px;
+    width: 20px; height: 20px; font-size: .72rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: -6px; right: -6px;
+    border: 2px solid var(--white);
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cart-badge.pop { transform: scale(1.4); }
+
+  /* ── HERO BANNER ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #243B55 100%);
+    color: #fff; padding: 2.5rem 2rem; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: '⚡';
+    position: absolute; right: 3rem; top: 50%; transform: translateY(-50%);
+    font-size: 9rem; opacity: .05; pointer-events: none;
+  }
+  .hero h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: .4rem; }
+  .hero h1 span { color: var(--teal); }
+  .hero p { color: rgba(255,255,255,.62); font-size: .95rem; max-width: 480px; }
+  .hero-badges { display: flex; gap: 10px; margin-top: 1.2rem; flex-wrap: wrap; }
+  .hero-badge {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.85); border-radius: 99px;
+    padding: 5px 14px; font-size: .8rem; font-weight: 500;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; max-width: 1280px; margin: 0 auto; padding: 2rem; gap: 2rem; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 220px; flex-shrink: 0; }
+  .filter-section { background: var(--white); border-radius: var(--card-r); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1rem; }
+  .filter-title { font-size: .75rem; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: .9rem; }
+  .filter-item {
+    display: flex; align-items: center; gap: 8px; padding: 6px 0;
+    cursor: pointer; font-size: .875rem; color: var(--navy); user-select: none;
+    border-radius: 6px; transition: color .12s;
+  }
+  .filter-item:hover { color: var(--teal); }
+  .filter-item input[type=checkbox] { accent-color: var(--teal); width: 15px; height: 15px; cursor: pointer; }
+  .filter-item.active-cat { color: var(--teal); font-weight: 600; }
+
+  .price-range { margin-top: .5rem; }
+  .range-slider { width: 100%; accent-color: var(--teal); cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; min-width: 0; }
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem; flex-wrap: wrap; gap: .75rem;
+  }
+  .result-count { font-size: .875rem; color: var(--muted); }
+  .result-count strong { color: var(--navy); }
+  .sort-select {
+    border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px;
+    font-family: var(--font); font-size: .85rem; color: var(--navy); background: var(--white);
+    outline: none; cursor: pointer;
+  }
+  .sort-select:focus { border-color: var(--teal); }
+
+  /* ── PRODUCT GRID ── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .product-card {
+    background: var(--white); border-radius: var(--card-r); border: 1px solid var(--border);
+    overflow: hidden; cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
+    animation: fadeUp .35s ease both;
+  }
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(27,42,61,.1);
+    border-color: var(--teal);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-img {
+    width: 100%; aspect-ratio: 1.3/1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; position: relative;
+    transition: transform .2s;
+  }
+  .product-card:hover .card-img { transform: scale(1.03); }
+
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--teal); color: #fff;
+    font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 99px;
+    letter-spacing: .04em;
+  }
+  .card-badge.new    { background: var(--green); }
+  .card-badge.sale   { background: var(--red); }
+  .card-badge.popular{ background: var(--orange); }
+
+  .verified-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,.95); border: 1px solid var(--border);
+    border-radius: 99px; padding: 3px 9px;
+    font-size: .68rem; font-weight: 600; color: var(--teal);
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .card-body { padding: 1rem; }
+  .card-cat { font-size: .72rem; font-weight: 600; color: var(--teal); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+  .card-name { font-size: .95rem; font-weight: 600; color: var(--navy); margin-bottom: .35rem; line-height: 1.3; }
+  .card-compat { font-size: .78rem; color: var(--muted); margin-bottom: .75rem; line-height: 1.4; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-price { font-size: 1.05rem; font-weight: 700; color: var(--navy); font-family: var(--mono); }
+  .card-price .old-price { font-size: .78rem; color: var(--muted); text-decoration: line-through; font-weight: 400; display: block; }
+
+  .add-btn {
+    background: var(--teal); color: #fff;
+    border: none; border-radius: 8px; padding: 7px 14px;
+    font-size: .82rem; font-weight: 600; font-family: var(--font);
+    cursor: pointer; transition: background .15s, transform .1s;
+    white-space: nowrap;
+  }
+  .add-btn:hover { background: var(--teal-dk); }
+  .add-btn:active { transform: scale(.95); }
+  .add-btn.added { background: var(--green); }
+
+  /* ── STARS ── */
+  .stars { color: var(--orange); font-size: .78rem; margin-bottom: .5rem; }
+  .stars span { color: var(--muted); font-size: .75rem; margin-left: 3px; }
+
+  /* ── CART DRAWER ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(27,42,61,.45);
+    z-index: 200; opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .overlay.show { opacity: 1; pointer-events: all; }
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100%; width: 380px; max-width: 95vw;
+    background: var(--white); z-index: 300;
+    transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column;
+    box-shadow: -8px 0 40px rgba(27,42,61,.12);
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drawer-title { font-size: 1.1rem; font-weight: 700; }
+  .close-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background .12s; }
+  .close-btn:hover { background: var(--border); }
+
+  .drawer-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+  .cart-item {
+    display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .cart-item-ico { font-size: 2rem; width: 54px; height: 54px; background: var(--bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: .875rem; font-weight: 600; margin-bottom: 3px; }
+  .cart-item-price { font-size: .85rem; color: var(--teal); font-weight: 600; font-family: var(--mono); }
+  .qty-ctrl { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .qty-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; color: var(--navy); transition: background .12s; }
+  .qty-btn:hover { background: var(--teal-lt); border-color: var(--teal); }
+  .qty-val { font-size: .875rem; font-weight: 600; min-width: 20px; text-align: center; }
+  .remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 4px; border-radius: 6px; transition: color .12s; }
+  .remove-btn:hover { color: var(--red); }
+
+  .empty-cart { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .empty-cart .ico { font-size: 3rem; margin-bottom: .75rem; }
+
+  .drawer-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .cart-total-label { font-size: .9rem; color: var(--muted); }
+  .cart-total-val { font-size: 1.25rem; font-weight: 700; font-family: var(--mono); }
+  .checkout-btn {
+    width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 10px;
+    padding: 13px; font-size: 1rem; font-weight: 700; font-family: var(--font);
+    cursor: pointer; transition: background .15s;
+  }
+  .checkout-btn:hover { background: var(--teal-dk); }
+  .checkout-note { text-align: center; font-size: .78rem; color: var(--muted); margin-top: .6rem; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--navy); color: #fff; border-radius: 10px; padding: 12px 22px;
+    font-size: .9rem; font-weight: 500; z-index: 500;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    opacity: 0; pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ── PROTOTYPE BANNER ── */
+  .proto-banner {
+    background: linear-gradient(90deg, #FFF3CD, #FFF8E8);
+    border-bottom: 1px solid #F5DEB3;
+    padding: 9px 2rem; font-size: .82rem; color: #7A5700;
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 500;
+  }
+  .proto-banner strong { font-weight: 700; }
+
+  /* ── PRODUCT MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(27,42,61,.5);
+    z-index: 400; display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white); border-radius: 20px; width: 100%; max-width: 560px;
+    padding: 2rem; position: relative;
+    transform: scale(.92); transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-overlay.show .modal { transform: scale(1); }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .modal-close:hover { background: var(--border); }
+  .modal-ico { font-size: 4.5rem; text-align: center; padding: 1rem; background: var(--bg); border-radius: 12px; margin-bottom: 1.25rem; }
+  .modal-cat { font-size: .78rem; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .08em; }
+  .modal-name { font-size: 1.4rem; font-weight: 700; margin: .35rem 0 .5rem; }
+  .modal-desc { font-size: .9rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+  .modal-compat { background: var(--teal-lt); border-radius: 8px; padding: .6rem 1rem; font-size: .85rem; color: var(--teal-dk); margin-bottom: 1rem; }
+  .modal-compat strong { font-weight: 600; }
+  .modal-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1rem; }
+  .modal-price { font-size: 1.5rem; font-weight: 700; font-family: var(--mono); }
+  .modal-add-btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 11px 28px; font-size: 1rem; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background .15s; }
+  .modal-add-btn:hover { background: var(--teal-dk); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .hero::after { display: none; }
+    .search-input { width: 160px; }
+    .nav-tabs { display: none; }
+  }
+
+  /* ── CHECKOUT OVERLAY ── */
+  .co-overlay {
+    position: fixed; inset: 0; background: rgba(27,42,61,.55);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    padding: 1rem; opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .co-overlay.show { opacity: 1; pointer-events: all; }
+
+  .co-modal {
+    background: var(--white); border-radius: 20px;
+    width: 100%; max-width: 860px; max-height: 92vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    transform: translateY(30px) scale(.97);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 32px 80px rgba(27,42,61,.22);
+  }
+  .co-overlay.show .co-modal { transform: translateY(0) scale(1); }
+
+  /* stepper */
+  .co-header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .co-title { font-size: 1.1rem; font-weight: 700; }
+  .co-close { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .co-close:hover { background: var(--border); }
+
+  .co-steps {
+    display: flex; align-items: center; gap: 0;
+    padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+    flex-shrink: 0; overflow-x: auto;
+  }
+  .co-step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .82rem; font-weight: 500; color: var(--muted);
+    white-space: nowrap;
+  }
+  .co-step.active { color: var(--teal); }
+  .co-step.done   { color: var(--green); }
+  .co-step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .78rem; font-weight: 700; flex-shrink: 0;
+    transition: all .2s;
+  }
+  .co-step.active .co-step-num { background: var(--teal); color: #fff; }
+  .co-step.done   .co-step-num { background: var(--green); color: #fff; }
+  .co-step-sep { width: 32px; height: 2px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+  .co-step-sep.done { background: var(--green); }
+
+  /* body */
+  .co-body {
+    display: flex; flex: 1; overflow: hidden; min-height: 0;
+  }
+  .co-main {
+    flex: 1; overflow-y: auto; padding: 1.75rem 2rem;
+  }
+  .co-aside {
+    width: 280px; border-left: 1px solid var(--border);
+    padding: 1.5rem; overflow-y: auto; background: var(--bg);
+    flex-shrink: 0;
+  }
+
+  /* form */
+  .co-section-title { font-size: .75rem; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1rem; }
+  .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .co-row.single { grid-template-columns: 1fr; }
+  .co-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .co-field { display: flex; flex-direction: column; gap: 5px; }
+  .co-label { font-size: .8rem; font-weight: 600; color: var(--navy); }
+  .co-label span { color: var(--red); }
+  .co-input, .co-select {
+    border: 1.5px solid var(--border); border-radius: 9px;
+    padding: 9px 13px; font-size: .9rem; font-family: var(--font);
+    color: var(--navy); background: var(--white); outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .co-input:focus, .co-select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(42,181,160,.12);
+  }
+  .co-input.err { border-color: var(--red); }
+  .co-err-msg { font-size: .75rem; color: var(--red); margin-top: 2px; display: none; }
+  .co-input.err + .co-err-msg { display: block; }
+
+  /* delivery options */
+  .co-options { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.25rem; }
+  .co-option {
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: .75rem 1rem; cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color .15s, background .15s;
+  }
+  .co-option.selected { border-color: var(--teal); background: var(--teal-lt); }
+  .co-option input[type=radio] { accent-color: var(--teal); width: 16px; height: 16px; flex-shrink: 0; }
+  .co-option-label { font-size: .9rem; font-weight: 600; }
+  .co-option-sub { font-size: .78rem; color: var(--muted); }
+  .co-option-price { margin-left: auto; font-weight: 700; font-family: var(--mono); font-size: .9rem; color: var(--teal); }
+
+  /* payment */
+  .co-card-row { display: flex; gap: 8px; margin-bottom: .75rem; }
+  .co-pay-tab {
+    flex: 1; border: 1.5px solid var(--border); border-radius: 9px;
+    padding: .6rem; cursor: pointer; text-align: center; font-size: .82rem; font-weight: 600;
+    background: var(--white); color: var(--muted); transition: all .15s;
+    font-family: var(--font);
+  }
+  .co-pay-tab.sel { border-color: var(--teal); background: var(--teal-lt); color: var(--teal); }
+
+  /* order summary sidebar */
+  .co-aside-title { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1rem; }
+  .co-aside-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .co-aside-ico { font-size: 1.4rem; width: 36px; height: 36px; background: var(--white); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); flex-shrink: 0; }
+  .co-aside-name { font-size: .82rem; font-weight: 500; line-height: 1.3; flex: 1; }
+  .co-aside-price { font-size: .82rem; font-weight: 700; font-family: var(--mono); flex-shrink: 0; }
+  .co-aside-totals { margin-top: .75rem; }
+  .co-aside-line { display: flex; justify-content: space-between; font-size: .85rem; padding: 5px 0; color: var(--muted); }
+  .co-aside-line.total { font-size: 1rem; font-weight: 700; color: var(--navy); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; }
+
+  /* footer buttons */
+  .co-footer {
+    padding: 1rem 2rem; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; background: var(--white);
+  }
+  .co-back-btn { background: none; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 20px; font-size: .9rem; font-weight: 600; font-family: var(--font); cursor: pointer; color: var(--navy); transition: border-color .15s; }
+  .co-back-btn:hover { border-color: var(--navy); }
+  .co-next-btn { background: var(--teal); color: #fff; border: none; border-radius: 9px; padding: 10px 28px; font-size: .9rem; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background .15s; }
+  .co-next-btn:hover { background: var(--teal-dk); }
+  .co-next-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+  /* confirmation */
+  .co-confirm {
+    text-align: center; padding: 2.5rem 2rem;
+  }
+  .co-confirm-icon { font-size: 4rem; margin-bottom: 1rem; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+  .co-confirm h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: .5rem; }
+  .co-confirm p { color: var(--muted); font-size: .95rem; max-width: 400px; margin: 0 auto 1.5rem; line-height: 1.6; }
+  .co-confirm-order { background: var(--bg); border-radius: 12px; padding: 1.25rem; text-align: left; max-width: 420px; margin: 0 auto 1.5rem; }
+  .co-confirm-row { display: flex; justify-content: space-between; font-size: .88rem; padding: 4px 0; }
+  .co-confirm-row.bold { font-weight: 700; font-size: .95rem; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 6px; }
+  .co-confirm-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .co-action-btn { border: none; border-radius: 9px; padding: 10px 24px; font-size: .9rem; font-weight: 600; font-family: var(--font); cursor: pointer; }
+  .co-action-primary { background: var(--teal); color: #fff; }
+  .co-action-secondary { background: var(--bg); border: 1.5px solid var(--border); color: var(--navy); }
+
+  @media (max-width: 700px) {
+    .co-aside { display: none; }
+    .co-row { grid-template-columns: 1fr; }
+    .co-row.triple { grid-template-columns: 1fr 1fr; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Prototype Banner -->
+<div class="proto-banner">
+  🧪 <strong>Prototype</strong> — EVen better Accessory Marketplace · Design Sprint validation · Not a real store
+</div>
+
+<!-- Top Bar -->
+<header class="topbar">
+  <a class="logo" href="#">
+    <div class="logo-icon">⚡</div>
+    EV<span>en</span> better
+  </a>
+
+  <nav class="nav-tabs">
+    <button class="nav-tab" onclick="switchTab(this,'map')">Charger Map</button>
+    <button class="nav-tab active" onclick="switchTab(this,'shop')">Shop</button>
+    <button class="nav-tab" onclick="switchTab(this,'mechanic')">Mechanics</button>
+    <button class="nav-tab" onclick="switchTab(this,'guides')">Guides</button>
+  </nav>
+
+  <div class="topbar-right">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" placeholder="Search accessories…" oninput="filterProducts()" id="searchInput">
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 Cart
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>EV Accessories — <span>Verified & Delivered</span></h1>
+  <p>Every cable, adapter, and charger sold here is verified compatible with cars sold in Georgia. No counterfeits. No guesswork.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">✅ Verified Sellers Only</span>
+    <span class="hero-badge">🇬🇪 Ships to All of Georgia</span>
+    <span class="hero-badge">🔌 Compatibility Guaranteed</span>
+    <span class="hero-badge">📦 Free Returns 30 Days</span>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="filter-section">
+      <div class="filter-title">Category</div>
+      <label class="filter-item active-cat" id="cat-all">
+        <input type="radio" name="cat" value="all" checked onchange="filterProducts()"> All Products
+      </label>
+      <label class="filter-item" id="cat-cables">
+        <input type="radio" name="cat" value="cables" onchange="filterProducts()"> 🔌 Cables & Adapters
+      </label>
+      <label class="filter-item" id="cat-chargers">
+        <input type="radio" name="cat" value="chargers" onchange="filterProducts()"> ⚡ Home Chargers
+      </label>
+      <label class="filter-item" id="cat-tools">
+        <input type="radio" name="cat" value="tools" onchange="filterProducts()"> 🔧 Tools & Monitors
+      </label>
+      <label class="filter-item" id="cat-protection">
+        <input type="radio" name="cat" value="protection" onchange="filterProducts()"> 🛡️ Protection
+      </label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-title">Max Price (₾)</div>
+      <div class="price-range">
+        <input type="range" class="range-slider" min="0" max="2000" value="2000" id="priceSlider" oninput="updatePrice(this)">
+        <div class="range-labels"><span>₾0</span><span id="priceVal">₾2000</span></div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-title">Compatibility</div>
+      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> Nissan Leaf</label>
+      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> VW ID.4</label>
+      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> Tesla</label>
+      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> BYD</label>
+      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> Hyundai Ioniq</label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-title">Seller</div>
+      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> ✅ Verified Only</label>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="toolbar">
+      <div class="result-count" id="resultCount">Showing <strong>12</strong> products</div>
+      <select class="sort-select" onchange="filterProducts()" id="sortSelect">
+        <option value="popular">Sort: Most Popular</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="newest">Newest First</option>
+      </select>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+  </main>
+</div>
+
+<!-- Cart Drawer -->
+<div class="overlay" id="overlay" onclick="toggleCart()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">🛒 Your Cart</div>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="drawer-items" id="drawerItems"></div>
+  <div class="drawer-footer" id="drawerFooter"></div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const PRODUCTS = [
+  { id:1,  cat:'cables',    ico:'🔌', name:'Type 2 Charging Cable 32A',       price:189,  old:null, stars:4.8, reviews:134, badge:'popular', compat:'VW ID.4 · BMW · Hyundai Ioniq', desc:'High-current 32A Type 2 cable for Mode 3 AC charging. 5-metre length, IP55 waterproof. Ships with Georgian plug adapter.' },
+  { id:2,  cat:'cables',    ico:'🔄', name:'CHAdeMO to CCS Adapter',           price:290,  old:360,  stars:4.5, reviews:67,  badge:'sale',    compat:'Nissan Leaf · Mitsubishi Outlander PHEV', desc:'Allows CHAdeMO vehicles to use CCS2 fast chargers — essential for Georgian highway routes where CHAdeMO stations are scarce.' },
+  { id:3,  cat:'cables',    ico:'⚡', name:'J1772 to Type 2 Adapter',          price:95,   old:null, stars:4.7, reviews:89,  badge:'new',     compat:'US-import EVs (Chevy Bolt · Bolt EUV)', desc:'For US-auction imports. Converts J1772 inlet to European Type 2 — works with all Georgian public chargers.' },
+  { id:4,  cat:'chargers',  ico:'🏠', name:'11kW Home Wallbox Charger',        price:1290, old:null, stars:4.9, reviews:201, badge:'popular', compat:'Universal — all Type 2 vehicles', desc:'Smart home charger with Wi-Fi, app control, and scheduled charging. Installation guide included in Georgian.' },
+  { id:5,  cat:'chargers',  ico:'🔋', name:'3.7kW Portable EVSE',              price:340,  old:420,  stars:4.4, reviews:55,  badge:'sale',    compat:'Universal — all Type 2 vehicles', desc:'Take charging anywhere. Includes Schuko, Type 2, and CEE17 plugs. Perfect for intercity trips without fast chargers.' },
+  { id:6,  cat:'chargers',  ico:'☀️', name:'Solar Balcony Charger Kit',        price:980,  old:null, stars:4.3, reviews:28,  badge:'new',     compat:'All EVs with Type 2 port', desc:'300W balcony panel + MPPT controller + Type 2 cable. Charge slowly for free overnight. Great for apartment dwellers.' },
+  { id:7,  cat:'tools',     ico:'🔍', name:'OBD2 Battery Health Scanner',      price:145,  old:null, stars:4.6, reviews:112, badge:null,      compat:'Nissan Leaf · Renault Zoe · BMW i3', desc:'Plug in, open app, read real SoH%. The exact tool to check a second-hand EV before buying. Works with Android & iOS.' },
+  { id:8,  cat:'tools',     ico:'📱', name:'Bluetooth Charge Monitor',         price:68,   old:null, stars:4.5, reviews:78,  badge:'popular', compat:'Universal — all EVs', desc:'Real-time charge current, voltage, and kWh display on your phone. Know exactly what you\'re paying per session.' },
+  { id:9,  cat:'tools',     ico:'🔦', name:'EV Safety Emergency Kit',          price:89,   old:null, stars:4.8, reviews:156, badge:null,      compat:'Universal', desc:'Reflective vest, warning triangle, gloves, and EV-specific fire blanket. Required for long intercity drives in Georgia.' },
+  { id:10, cat:'protection',ico:'🛡️', name:'Type 2 Port Dust Cap (2-pack)',    price:18,   old:null, stars:4.3, reviews:203, badge:null,      compat:'Universal — all Type 2 ports', desc:'Waterproof silicone caps protect your charge port from Tbilisi road dust and rain. Attach to keyring so you never lose them.' },
+  { id:11, cat:'protection',ico:'🧲', name:'Cable Lock & Tether Set',          price:54,   old:null, stars:4.7, reviews:91,  badge:'new',     compat:'Universal', desc:'4-digit cable lock prevents theft at public stations. Tether attaches cable to car so it\'s never left behind.' },
+  { id:12, cat:'cables',    ico:'🇰🇷', name:'CCS1 to CCS2 Adapter (Korean)',   price:220,  old:null, stars:4.4, reviews:44,  badge:'new',     compat:'Hyundai Ioniq 5 · Kia EV6 (KR spec)', desc:'Korean-spec CCS1 imports need this to use European CCS2 fast chargers. Rated for up to 150kW. Tested at Georgian Wissol DC stations.' },
+];
+
+let cart = {};
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function renderProducts(products) {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = '';
+  document.getElementById('resultCount').innerHTML = `Showing <strong>${products.length}</strong> products`;
+
+  if (products.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">No products match your filters 🤷</div>';
+    return;
+  }
+
+  products.forEach((p, i) => {
+    const stars = '★'.repeat(Math.floor(p.stars)) + (p.stars % 1 >= .5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(p.stars));
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.animationDelay = `${i * 0.04}s`;
+    card.innerHTML = `
+      <div class="card-img" style="background:${colorForCat(p.cat)}">
+        ${p.badge ? `<div class="card-badge ${p.badge}">${p.badge.toUpperCase()}</div>` : ''}
+        <div class="verified-badge">✅ Verified</div>
+        ${p.ico}
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${catLabel(p.cat)}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="stars">${stars} <span>(${p.reviews})</span></div>
+        <div class="card-compat">🚗 ${p.compat}</div>
+        <div class="card-footer">
+          <div class="card-price">
+            ${p.old ? `<span class="old-price">₾${p.old}</span>` : ''}
+            ₾${p.price}
+          </div>
+          <button class="add-btn" id="btn-${p.id}" onclick="addToCart(event, ${p.id})">+ Add</button>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('add-btn')) openModal(p);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function colorForCat(cat) {
+  return {cables:'#EEF9F7',chargers:'#EFF6FF',tools:'#FFF8EC',protection:'#F0EEFF'}[cat] || '#F4F6F8';
+}
+
+function catLabel(cat) {
+  return {cables:'Cables & Adapters',chargers:'Home Chargers',tools:'Tools & Monitors',protection:'Protection'}[cat] || cat;
+}
+
+// ── FILTER ───────────────────────────────────────────────────────────────────
+function filterProducts() {
+  const q     = document.getElementById('searchInput').value.toLowerCase();
+  const cat   = document.querySelector('input[name=cat]:checked').value;
+  const max   = parseInt(document.getElementById('priceSlider').value);
+  const sort  = document.getElementById('sortSelect').value;
+
+  let list = PRODUCTS.filter(p => {
+    if (cat !== 'all' && p.cat !== cat) return false;
+    if (p.price > max) return false;
+    if (q && !p.name.toLowerCase().includes(q) && !p.compat.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (sort === 'price-asc')  list.sort((a,b) => a.price - b.price);
+  if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+  if (sort === 'newest')     list.sort((a,b) => b.id - a.id);
+  if (sort === 'popular')    list.sort((a,b) => b.reviews - a.reviews);
+
+  renderProducts(list);
+}
+
+function updatePrice(el) {
+  document.getElementById('priceVal').textContent = '₾' + el.value;
+  filterProducts();
+}
+
+// ── CART ─────────────────────────────────────────────────────────────────────
+function addToCart(e, id) {
+  e.stopPropagation();
+  cart[id] = (cart[id] || 0) + 1;
+  updateCartUI();
+  const btn = document.getElementById('btn-' + id);
+  if (btn) {
+    btn.textContent = '✓ Added'; btn.classList.add('added');
+    setTimeout(() => { btn.textContent = '+ Add'; btn.classList.remove('added'); }, 1200);
+  }
+  const p = PRODUCTS.find(x => x.id === id);
+  showToast(`${p.ico} ${p.name} added to cart`);
+}
+
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  updateCartUI();
+  renderCartDrawer();
+}
+
+function removeItem(id) {
+  delete cart[id];
+  updateCartUI();
+  renderCartDrawer();
+}
+
+function updateCartUI() {
+  const total = Object.values(cart).reduce((s,v) => s+v, 0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = total;
+  badge.style.display = total > 0 ? 'flex' : 'none';
+  badge.classList.add('pop');
+  setTimeout(() => badge.classList.remove('pop'), 200);
+}
+
+function renderCartDrawer() {
+  const el = document.getElementById('drawerItems');
+  const footer = document.getElementById('drawerFooter');
+  const ids = Object.keys(cart);
+
+  if (ids.length === 0) {
+    el.innerHTML = `<div class="empty-cart"><div class="ico">🛒</div><div>Your cart is empty</div><div style="font-size:.82rem;margin-top:.4rem;">Browse accessories above</div></div>`;
+    footer.innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = ids.map(id => {
+    const p = PRODUCTS.find(x => x.id == id);
+    return `<div class="cart-item">
+      <div class="cart-item-ico">${p.ico}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-price">₾${p.price}</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
+          <span class="qty-val">${cart[id]}</span>
+          <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+        </div>
+      </div>
+      <button class="remove-btn" onclick="removeItem(${p.id})">🗑</button>
+    </div>`;
+  }).join('');
+
+  const subtotal = ids.reduce((s, id) => s + PRODUCTS.find(x => x.id==id).price * cart[id], 0);
+  footer.innerHTML = `
+    <div class="cart-total">
+      <span class="cart-total-label">Subtotal</span>
+      <span class="cart-total-val">₾${subtotal}</span>
+    </div>
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout →</button>
+    <div class="checkout-note">🇬🇪 Free delivery to Tbilisi on orders over ₾200</div>
+  `;
+}
+
+function toggleCart() {
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  const open = drawer.classList.toggle('open');
+  overlay.classList.toggle('show', open);
+  if (open) renderCartDrawer();
+}
+
+// ── CHECKOUT FLOW ──────────────────────────────────────────────────────────
+let coStep = 1; // 1=delivery, 2=payment, 3=confirm
+let coDelivery = 'standard';
+let coPayMethod = 'card';
+let coOrderNum = '';
+
+const CO_STEPS = [
+  { n: 1, label: 'Delivery'  },
+  { n: 2, label: 'Payment'   },
+  { n: 3, label: 'Confirm'   },
+];
+
+function checkout() {
+  if (Object.keys(cart).length === 0) return;
+  toggleCart();
+  coStep = 1;
+  coOrderNum = 'EVB-' + Math.floor(10000 + Math.random() * 90000);
+  document.getElementById('coOverlay').classList.add('show');
+  renderCheckout();
+}
+
+function closeCheckout() {
+  document.getElementById('coOverlay').classList.remove('show');
+}
+
+function cartSubtotal() {
+  return Object.keys(cart).reduce((s, id) => s + PRODUCTS.find(x => x.id == id).price * cart[id], 0);
+}
+
+function deliveryCost() {
+  const sub = cartSubtotal();
+  if (coDelivery === 'standard') return sub >= 200 ? 0 : 15;
+  if (coDelivery === 'express')  return 35;
+  if (coDelivery === 'pickup')   return 0;
+  return 0;
+}
+
+function renderCheckout() {
+  renderCoSteps();
+  renderCoAside();
+  const step = coStep;
+  if (step === 1) renderDeliveryStep();
+  else if (step === 2) renderPaymentStep();
+  else renderConfirmStep();
+}
+
+function renderCoSteps() {
+  const el = document.getElementById('coSteps');
+  el.innerHTML = CO_STEPS.map((s, i) => {
+    const cls = coStep > s.n ? 'done' : coStep === s.n ? 'active' : '';
+    const ico = coStep > s.n ? '✓' : s.n;
+    const sep = i < CO_STEPS.length - 1
+      ? `<div class="co-step-sep ${coStep > s.n ? 'done' : ''}"></div>`
+      : '';
+    return `<div class="co-step ${cls}">
+      <div class="co-step-num">${ico}</div>
+      <span>${s.label}</span>
+    </div>${sep}`;
+  }).join('');
+
+  const titles = ['', 'Delivery Details', 'Payment', 'Order Confirmed!'];
+  document.getElementById('coTitle').textContent = titles[coStep];
+}
+
+function renderCoAside() {
+  const ids = Object.keys(cart);
+  const sub  = cartSubtotal();
+  const del  = deliveryCost();
+  const total = sub + del;
+  document.getElementById('coAside').innerHTML = `
+    <div class="co-aside-title">Order Summary</div>
+    ${ids.map(id => {
+      const p = PRODUCTS.find(x => x.id == id);
+      const qty = cart[id];
+      return `<div class="co-aside-item">
+        <div class="co-aside-ico">${p.ico}</div>
+        <div class="co-aside-name">${p.name}${qty > 1 ? ` ×${qty}` : ''}</div>
+        <div class="co-aside-price">₾${p.price * qty}</div>
+      </div>`;
+    }).join('')}
+    <div class="co-aside-totals">
+      <div class="co-aside-line"><span>Subtotal</span><span>₾${sub}</span></div>
+      <div class="co-aside-line"><span>Delivery</span><span>${del === 0 ? '<span style="color:var(--green)">Free</span>' : '₾' + del}</span></div>
+      <div class="co-aside-line total"><span>Total</span><span>₾${total}</span></div>
+    </div>
+  `;
+}
+
+// ── STEP 1: DELIVERY ─────────────────────────────────────────────────────────
+function renderDeliveryStep() {
+  document.getElementById('coMain').innerHTML = `
+    <div class="co-section-title">Delivery Method</div>
+    <div class="co-options" id="coDeliveryOpts">
+      ${[
+        { val:'standard', ico:'📦', label:'Standard Delivery', sub:'2–4 business days · Tbilisi & regions', price: cartSubtotal()>=200?'Free':'₾15' },
+        { val:'express',  ico:'⚡', label:'Express Delivery',  sub:'Next business day · Tbilisi only',       price:'₾35' },
+        { val:'pickup',   ico:'🏪', label:'Pickup at Partner Hub', sub:'Wissol Vake or Tegeta Isani · Ready in 2h', price:'Free' },
+      ].map(o => `
+        <label class="co-option ${coDelivery===o.val?'selected':''}" onclick="selectDelivery('${o.val}')">
+          <input type="radio" name="delivery" value="${o.val}" ${coDelivery===o.val?'checked':''}>
+          <span style="font-size:1.4rem">${o.ico}</span>
+          <div>
+            <div class="co-option-label">${o.label}</div>
+            <div class="co-option-sub">${o.sub}</div>
+          </div>
+          <span class="co-option-price">${o.price}</span>
+        </label>`).join('')}
+    </div>
+
+    <div class="co-section-title" style="margin-top:1.25rem">Contact & Address</div>
+    <div class="co-row">
+      <div class="co-field">
+        <label class="co-label">First Name <span>*</span></label>
+        <input class="co-input" id="co_fname" placeholder="Giorgi" value="">
+        <div class="co-err-msg">Required</div>
+      </div>
+      <div class="co-field">
+        <label class="co-label">Last Name <span>*</span></label>
+        <input class="co-input" id="co_lname" placeholder="Beridze" value="">
+        <div class="co-err-msg">Required</div>
+      </div>
+    </div>
+    <div class="co-row">
+      <div class="co-field">
+        <label class="co-label">Phone <span>*</span></label>
+        <input class="co-input" id="co_phone" placeholder="+995 555 00 00 00" type="tel">
+        <div class="co-err-msg">Required</div>
+      </div>
+      <div class="co-field">
+        <label class="co-label">Email</label>
+        <input class="co-input" id="co_email" placeholder="giorgi@example.com" type="email">
+      </div>
+    </div>
+    <div id="coAddressBlock">
+      <div class="co-row single">
+        <div class="co-field">
+          <label class="co-label">Street Address <span>*</span></label>
+          <input class="co-input" id="co_addr" placeholder="Rustaveli Ave 23, Apt 5">
+          <div class="co-err-msg">Required</div>
+        </div>
+      </div>
+      <div class="co-row triple">
+        <div class="co-field">
+          <label class="co-label">City <span>*</span></label>
+          <select class="co-select" id="co_city">
+            <option>Tbilisi</option><option>Batumi</option><option>Kutaisi</option>
+            <option>Rustavi</option><option>Gori</option><option>Other</option>
+          </select>
+        </div>
+        <div class="co-field">
+          <label class="co-label">District</label>
+          <input class="co-input" id="co_district" placeholder="Vake">
+        </div>
+        <div class="co-field">
+          <label class="co-label">Postal Code</label>
+          <input class="co-input" id="co_zip" placeholder="0179">
+        </div>
+      </div>
+    </div>
+    <div class="co-field" style="margin-top:.75rem">
+      <label class="co-label">Delivery Note</label>
+      <input class="co-input" id="co_note" placeholder="Leave at door, ring twice, etc.">
+    </div>
+  `;
+
+  document.getElementById('coFooter').innerHTML = `
+    <span style="font-size:.82rem;color:var(--muted)">🔒 Secure checkout</span>
+    <button class="co-next-btn" onclick="deliveryNext()">Continue to Payment →</button>
+  `;
+
+  // hide address if pickup
+  updateAddressVisibility();
+}
+
+function selectDelivery(val) {
+  coDelivery = val;
+  document.querySelectorAll('.co-option').forEach(el => {
+    el.classList.toggle('selected', el.querySelector('input').value === val);
+  });
+  updateAddressVisibility();
+  renderCoAside(); // update delivery cost live
+}
+
+function updateAddressVisibility() {
+  const ab = document.getElementById('coAddressBlock');
+  if (ab) ab.style.display = coDelivery === 'pickup' ? 'none' : 'block';
+}
+
+function deliveryNext() {
+  let valid = true;
+  ['co_fname','co_lname','co_phone'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.value.trim()) { el && el.classList.add('err'); valid = false; }
+    else el.classList.remove('err');
+  });
+  if (coDelivery !== 'pickup') {
+    const addr = document.getElementById('co_addr');
+    if (!addr.value.trim()) { addr.classList.add('err'); valid = false; }
+    else addr.classList.remove('err');
+  }
+  if (!valid) { showToast('⚠️ Please fill in the required fields'); return; }
+  coStep = 2;
+  renderCheckout();
+}
+
+// ── STEP 2: PAYMENT ──────────────────────────────────────────────────────────
+function renderPaymentStep() {
+  const total = cartSubtotal() + deliveryCost();
+  document.getElementById('coMain').innerHTML = `
+    <div class="co-section-title">Payment Method</div>
+    <div class="co-card-row">
+      ${[
+        { val:'card',   label:'💳 Card' },
+        { val:'bank',   label:'🏦 Bank Transfer' },
+        { val:'cash',   label:'💵 Cash on Delivery' },
+      ].map(m => `<button class="co-pay-tab ${coPayMethod===m.val?'sel':''}" onclick="selectPayMethod('${m.val}')">${m.label}</button>`).join('')}
+    </div>
+
+    <div id="coPayFields"></div>
+
+    <div style="background:var(--teal-lt);border-radius:10px;padding:1rem;margin-top:1.25rem;font-size:.88rem;color:var(--teal-dk);">
+      <strong>Total to pay: ₾${total}</strong><br>
+      <span style="color:var(--muted)">All prices include Georgian VAT (18%)</span>
+    </div>
+
+    <div style="margin-top:1.25rem;padding:1rem;background:var(--bg);border-radius:10px;font-size:.82rem;color:var(--muted);line-height:1.6">
+      🔒 Prototype note: no real payment is processed. This flow demonstrates the UX only.
+    </div>
+  `;
+  renderPayFields();
+
+  document.getElementById('coFooter').innerHTML = `
+    <button class="co-back-btn" onclick="coStep=1;renderCheckout()">← Back</button>
+    <button class="co-next-btn" onclick="paymentNext()">Place Order →</button>
+  `;
+}
+
+function selectPayMethod(val) {
+  coPayMethod = val;
+  document.querySelectorAll('.co-pay-tab').forEach(el => {
+    el.classList.toggle('sel', el.textContent.includes(val==='card'?'Card':val==='bank'?'Bank':'Cash'));
+  });
+  renderPayFields();
+}
+
+function renderPayFields() {
+  const el = document.getElementById('coPayFields');
+  if (!el) return;
+  if (coPayMethod === 'card') {
+    el.innerHTML = `
+      <div class="co-row single" style="margin-top:1rem">
+        <div class="co-field">
+          <label class="co-label">Cardholder Name <span>*</span></label>
+          <input class="co-input" id="co_cname" placeholder="GIORGI BERIDZE">
+        </div>
+      </div>
+      <div class="co-row single">
+        <div class="co-field">
+          <label class="co-label">Card Number <span>*</span></label>
+          <input class="co-input" id="co_cnum" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCard(this)">
+        </div>
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label class="co-label">Expiry <span>*</span></label>
+          <input class="co-input" id="co_exp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
+        </div>
+        <div class="co-field">
+          <label class="co-label">CVV <span>*</span></label>
+          <input class="co-input" id="co_cvv" placeholder="123" maxlength="4" type="password">
+        </div>
+      </div>`;
+  } else if (coPayMethod === 'bank') {
+    el.innerHTML = `
+      <div style="margin-top:1rem;padding:1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;line-height:1.8">
+        <div><strong>Bank:</strong> TBC Bank Georgia</div>
+        <div><strong>Account:</strong> GE29TB7194336080100003</div>
+        <div><strong>Reference:</strong> ${coOrderNum}</div>
+        <div style="color:var(--muted);font-size:.8rem;margin-top:.5rem">Transfer within 24h to confirm order. You'll receive a confirmation email.</div>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <div style="margin-top:1rem;padding:1rem;background:var(--bg);border-radius:10px;font-size:.88rem;color:var(--muted);line-height:1.6">
+        💵 Pay the courier in cash when your order arrives. Available for Tbilisi deliveries only.
+      </div>`;
+  }
+}
+
+function formatCard(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
+  el.value = v;
+}
+
+function paymentNext() {
+  if (coPayMethod === 'card') {
+    const cnum = document.getElementById('co_cnum');
+    const exp  = document.getElementById('co_exp');
+    const cvv  = document.getElementById('co_cvv');
+    let valid = true;
+    if (!cnum || cnum.value.replace(/\s/g,'').length < 16) { cnum && cnum.classList.add('err'); valid = false; } else cnum.classList.remove('err');
+    if (!exp  || exp.value.length < 7)  { exp && exp.classList.add('err');  valid = false; } else exp.classList.remove('err');
+    if (!cvv  || cvv.value.length < 3)  { cvv && cvv.classList.add('err');  valid = false; } else cvv.classList.remove('err');
+    if (!valid) { showToast('⚠️ Please complete card details'); return; }
+  }
+  // simulate processing
+  const btn = document.querySelector('.co-next-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
+  setTimeout(() => {
+    coStep = 3;
+    cart = {};
+    updateCartUI();
+    renderCheckout();
+  }, 1400);
+}
+
+// ── STEP 3: CONFIRMATION ─────────────────────────────────────────────────────
+function renderConfirmStep() {
+  document.getElementById('coSteps').innerHTML = ''; // hide steps on confirm
+  document.getElementById('coAside').style.display = 'none';
+  document.getElementById('coFooter').innerHTML = '';
+
+  document.getElementById('coMain').innerHTML = `
+    <div class="co-confirm">
+      <div class="co-confirm-icon">🎉</div>
+      <h2>Order Placed!</h2>
+      <p>Thank you! Your EV accessories are on the way. You'll receive an SMS confirmation shortly.</p>
+      <div class="co-confirm-order">
+        <div class="co-confirm-row"><span>Order Number</span><strong>${coOrderNum}</strong></div>
+        <div class="co-confirm-row"><span>Delivery</span><strong>${
+          coDelivery==='standard'?'Standard (2–4 days)':
+          coDelivery==='express' ?'Express (next day)':
+          'Hub Pickup (ready in 2h)'
+        }</strong></div>
+        <div class="co-confirm-row"><span>Payment</span><strong>${
+          coPayMethod==='card'?'Card ending ****':
+          coPayMethod==='bank'?'Bank Transfer':
+          'Cash on Delivery'
+        }</strong></div>
+        <div class="co-confirm-row bold"><span>Total Paid</span><span style="color:var(--teal)">Prototype — no charge</span></div>
+      </div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem">
+        🧪 This is a <strong>design sprint prototype</strong>. No real order was placed or payment taken.
+      </div>
+      <div class="co-confirm-actions">
+        <button class="co-action-btn co-action-primary" onclick="closeCheckout()">Continue Shopping</button>
+        <button class="co-action-btn co-action-secondary" onclick="closeCheckout();showToast('📦 Track order feature coming soon!')">Track Order</button>
+      </div>
+    </div>
+  `;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+function openModal(p) {
+  const stars = '★'.repeat(Math.floor(p.stars)) + '☆'.repeat(5 - Math.floor(p.stars));
+  document.getElementById('modalContent').innerHTML = `
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-ico">${p.ico}</div>
+    <div class="modal-cat">${catLabel(p.cat)}</div>
+    <div class="modal-name">${p.name}</div>
+    <div class="stars" style="font-size:.95rem">${stars} <span style="color:var(--muted);font-size:.85rem">${p.stars} · ${p.reviews} reviews</span></div>
+    <div class="modal-desc">${p.desc}</div>
+    <div class="modal-compat"><strong>✅ Compatible with:</strong> ${p.compat}</div>
+    ${p.badge === 'sale' && p.old ? `<div style="font-size:.82rem;color:var(--red);margin-bottom:.5rem">🔥 Sale — was ₾${p.old}</div>` : ''}
+    <div class="modal-footer">
+      <div class="modal-price">₾${p.price}</div>
+      <button class="modal-add-btn" onclick="addToCart(event,${p.id}); closeModalDirect()">+ Add to Cart</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── NAV TABS (prototype stubs) ────────────────────────────────────────────────
+function switchTab(btn, tab) {
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab !== 'shop') {
+    showToast(`📍 "${btn.textContent.trim()}" module — open in full app`);
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById('cartBadge').style.display = 'none';
+renderProducts(PRODUCTS);
+</script>
+
+<!-- ── CHECKOUT OVERLAY ── -->
+<div class="co-overlay" id="coOverlay">
+  <div class="co-modal" id="coModal">
+    <div class="co-header">
+      <div class="co-title" id="coTitle">Checkout</div>
+      <button class="co-close" onclick="closeCheckout()">✕</button>
+    </div>
+    <div class="co-steps" id="coSteps"></div>
+    <div class="co-body">
+      <div class="co-main" id="coMain"></div>
+      <aside class="co-aside" id="coAside"></aside>
+    </div>
+    <div class="co-footer" id="coFooter"></div>
+  </div>
+</div>
+
+</body>
+</html>
