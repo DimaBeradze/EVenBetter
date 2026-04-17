@@ -3,1230 +3,1310 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EVen better — Accessory Marketplace</title>
+<title>EVen better</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── RESET & TOKENS ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:      #2AB5A0;
+  --teal-glow: rgba(42,181,160,.25);
+  --teal-dk:   #1A8F7E;
+  --teal-lt:   #E8F7F5;
+  --navy:      #0D1B2A;
+  --navy2:     #162436;
+  --navy3:     #1E3045;
+  --panel:     #111E2D;
+  --border:    rgba(255,255,255,.08);
+  --border-lt: #E2E8EF;
+  --white:     #FFFFFF;
+  --bg:        #F4F6F8;
+  --muted:     #7A95AE;
+  --muted-lt:  #6B7E96;
+  --green:     #34C77B;
+  --orange:    #F5A623;
+  --red:       #E05252;
+  --blue:      #4A90D9;
+  --font:      'DM Sans', sans-serif;
+  --display:   'Syne', sans-serif;
+  --mono:      'DM Mono', monospace;
+  --bar:       58px;
+  --bottom-nav: 60px;
+}
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font); background: var(--navy); color: var(--white); }
 
-  :root {
-    --teal:    #2AB5A0;
-    --teal-dk: #1E9080;
-    --teal-lt: #E8F7F5;
-    --navy:    #1B2A3D;
-    --muted:   #6B7E96;
-    --border:  #E2E8EF;
-    --bg:      #F4F6F8;
-    --white:   #FFFFFF;
-    --orange:  #F5A623;
-    --green:   #34C77B;
-    --red:     #E05252;
-    --card-r:  16px;
-    --font:    'DM Sans', sans-serif;
-    --mono:    'DM Mono', monospace;
-  }
+/* ══════════════════════════════════════════════════════════════════════════════
+   TOP BAR
+══════════════════════════════════════════════════════════════════════════════ */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--bar);
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 18px;
+  background: rgba(13,27,42,.97);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  display: flex; align-items: center; gap: 9px; text-decoration: none;
+  font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: var(--white);
+  flex-shrink: 0;
+}
+.logo-icon {
+  width: 32px; height: 32px; background: var(--teal); border-radius: 9px;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  box-shadow: 0 0 16px var(--teal-glow);
+}
+.logo em { color: var(--teal); font-style: normal; }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--navy);
-    min-height: 100vh;
-  }
+/* shared search */
+.search-wrap { flex: 1; max-width: 360px; position: relative; }
+.search-bar {
+  width: 100%; background: var(--navy2); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 8px 14px 8px 38px;
+  font-family: var(--font); font-size: .875rem; color: var(--white); outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-bar::placeholder { color: var(--muted); }
+.search-bar:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
+.search-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; }
 
-  /* ── TOPBAR ── */
-  .topbar {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-    padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px;
-    box-shadow: 0 1px 12px rgba(0,0,0,.05);
-  }
-  .logo {
-    display: flex; align-items: center; gap: 10px;
-    font-weight: 700; font-size: 1.15rem; color: var(--navy);
-    text-decoration: none;
-  }
-  .logo-icon {
-    width: 36px; height: 36px; background: var(--teal);
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-  .logo span { color: var(--teal); }
+/* map filter chips (visible only in map view) */
+.map-chips {
+  display: flex; gap: 6px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none;
+}
+.map-chips::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 5px 13px; border-radius: 99px; font-size: .75rem; font-weight: 600;
+  border: 1.5px solid var(--border); background: transparent; color: var(--muted);
+  cursor: pointer; white-space: nowrap; font-family: var(--font); transition: all .15s;
+}
+.chip:hover { border-color: var(--teal); color: var(--teal); }
+.chip.on { background: var(--teal); border-color: var(--teal); color: var(--navy); }
 
-  .nav-tabs {
-    display: flex; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-  }
-  .nav-tab {
-    padding: 7px 18px; font-size: .85rem; font-weight: 500;
-    background: transparent; border: none; cursor: pointer; color: var(--muted);
-    font-family: var(--font); transition: all .15s;
-  }
-  .nav-tab.active { background: var(--teal); color: #fff; }
-  .nav-tab:hover:not(.active) { background: var(--teal-lt); color: var(--teal); }
+/* cart button */
+.cart-btn {
+  position: relative; background: var(--navy3); color: var(--white);
+  border: 1.5px solid var(--border); border-radius: 10px; padding: 7px 15px;
+  font-size: .82rem; font-weight: 600; font-family: var(--font);
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  transition: all .15s; white-space: nowrap; flex-shrink: 0;
+}
+.cart-btn:hover { border-color: var(--teal); color: var(--teal); }
+.cart-badge {
+  background: var(--teal); color: var(--navy); border-radius: 99px;
+  width: 18px; height: 18px; font-size: .68rem; font-weight: 800;
+  display: none; align-items: center; justify-content: center;
+  position: absolute; top: -6px; right: -6px; border: 2px solid var(--navy);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.cart-badge.pop { transform: scale(1.5); }
 
-  .topbar-right { display: flex; align-items: center; gap: 14px; }
-  .search-wrap {
-    position: relative;
-  }
-  .search-input {
-    border: 1.5px solid var(--border); border-radius: 10px;
-    padding: 8px 14px 8px 38px; font-size: .875rem; font-family: var(--font);
-    width: 240px; background: var(--bg); color: var(--navy); outline: none;
-    transition: border-color .15s;
-  }
-  .search-input:focus { border-color: var(--teal); }
-  .search-icon {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    color: var(--muted); pointer-events: none; font-size: 14px;
-  }
+/* ══════════════════════════════════════════════════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════════════════════════════════════════════════ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  height: var(--bottom-nav);
+  background: rgba(13,27,42,.97); backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  display: flex;
+}
+.bnav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; cursor: pointer; background: none; border: none; color: var(--muted);
+  font-family: var(--font); font-size: .72rem; font-weight: 600;
+  transition: color .15s; padding: 8px;
+}
+.bnav-btn .bnav-ico { font-size: 1.3rem; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+.bnav-btn.active { color: var(--teal); }
+.bnav-btn.active .bnav-ico { transform: scale(1.15); }
+.bnav-btn:hover:not(.active) { color: rgba(255,255,255,.6); }
 
-  .cart-btn {
-    position: relative; background: var(--navy); color: #fff;
-    border: none; border-radius: 10px; padding: 8px 18px;
-    font-size: .875rem; font-weight: 600; font-family: var(--font);
-    cursor: pointer; display: flex; align-items: center; gap: 8px;
-    transition: background .15s; white-space: nowrap;
-  }
-  .cart-btn:hover { background: var(--teal); }
-  .cart-badge {
-    background: var(--teal); color: #fff; border-radius: 99px;
-    width: 20px; height: 20px; font-size: .72rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    position: absolute; top: -6px; right: -6px;
-    border: 2px solid var(--white);
-    transition: transform .2s cubic-bezier(.34,1.56,.64,1);
-  }
-  .cart-badge.pop { transform: scale(1.4); }
+/* ══════════════════════════════════════════════════════════════════════════════
+   VIEW SYSTEM
+══════════════════════════════════════════════════════════════════════════════ */
+.view {
+  position: fixed; top: var(--bar); left: 0; right: 0;
+  bottom: var(--bottom-nav);
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s ease;
+}
+.view.active { opacity: 1; pointer-events: all; }
 
-  /* ── HERO BANNER ── */
-  .hero {
-    background: linear-gradient(135deg, var(--navy) 0%, #243B55 100%);
-    color: #fff; padding: 2.5rem 2rem; position: relative; overflow: hidden;
-  }
-  .hero::after {
-    content: '⚡';
-    position: absolute; right: 3rem; top: 50%; transform: translateY(-50%);
-    font-size: 9rem; opacity: .05; pointer-events: none;
-  }
-  .hero h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: .4rem; }
-  .hero h1 span { color: var(--teal); }
-  .hero p { color: rgba(255,255,255,.62); font-size: .95rem; max-width: 480px; }
-  .hero-badges { display: flex; gap: 10px; margin-top: 1.2rem; flex-wrap: wrap; }
-  .hero-badge {
-    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
-    color: rgba(255,255,255,.85); border-radius: 99px;
-    padding: 5px 14px; font-size: .8rem; font-weight: 500;
-  }
+/* ══════════════════════════════════════════════════════════════════════════════
+   MAP VIEW
+══════════════════════════════════════════════════════════════════════════════ */
+#viewMap { overflow: hidden; }
+#mapCanvas { width: 100%; height: 100%; cursor: grab; display: block; }
+#mapCanvas:active { cursor: grabbing; }
 
-  /* ── LAYOUT ── */
-  .layout { display: flex; max-width: 1280px; margin: 0 auto; padding: 2rem; gap: 2rem; }
+.stats-bar {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 7px; z-index: 10; pointer-events: none;
+  animation: dropIn .5s .2s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes dropIn { from{opacity:0;transform:translateX(-50%) translateY(-14px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
+.stat-pill {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 99px; padding: 5px 13px;
+  display: flex; align-items: center; gap: 6px;
+  font-size: .78rem; font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0,0,0,.3); backdrop-filter: blur(8px);
+}
+.stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.stat-dot.green  { background: var(--green);  box-shadow: 0 0 5px var(--green); }
+.stat-dot.orange { background: var(--orange); box-shadow: 0 0 5px var(--orange); }
+.stat-dot.red    { background: var(--red);    box-shadow: 0 0 5px var(--red); }
 
-  /* ── SIDEBAR ── */
-  .sidebar { width: 220px; flex-shrink: 0; }
-  .filter-section { background: var(--white); border-radius: var(--card-r); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1rem; }
-  .filter-title { font-size: .75rem; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: .9rem; }
-  .filter-item {
-    display: flex; align-items: center; gap: 8px; padding: 6px 0;
-    cursor: pointer; font-size: .875rem; color: var(--navy); user-select: none;
-    border-radius: 6px; transition: color .12s;
-  }
-  .filter-item:hover { color: var(--teal); }
-  .filter-item input[type=checkbox] { accent-color: var(--teal); width: 15px; height: 15px; cursor: pointer; }
-  .filter-item.active-cat { color: var(--teal); font-weight: 600; }
+.zoom-ctrl {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 4px; z-index: 10;
+}
+.zoom-btn {
+  width: 34px; height: 34px; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--white); font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s; font-family: var(--font);
+}
+.zoom-btn:hover { background: var(--navy3); border-color: var(--teal); }
 
-  .price-range { margin-top: .5rem; }
-  .range-slider { width: 100%; accent-color: var(--teal); cursor: pointer; }
-  .range-labels { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.my-loc-btn {
+  position: absolute; right: 14px; bottom: 14px; z-index: 10;
+  width: 42px; height: 42px; background: var(--teal); border: none;
+  border-radius: 12px; cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 18px var(--teal-glow); transition: transform .2s;
+}
+.my-loc-btn:hover { transform: scale(1.1); }
 
-  /* ── MAIN ── */
-  .main { flex: 1; min-width: 0; }
-  .toolbar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 1.25rem; flex-wrap: wrap; gap: .75rem;
-  }
-  .result-count { font-size: .875rem; color: var(--muted); }
-  .result-count strong { color: var(--navy); }
-  .sort-select {
-    border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px;
-    font-family: var(--font); font-size: .85rem; color: var(--navy); background: var(--white);
-    outline: none; cursor: pointer;
-  }
-  .sort-select:focus { border-color: var(--teal); }
+.list-toggle-btn {
+  position: absolute; left: 14px; bottom: 14px; z-index: 10;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 11px; padding: 9px 14px;
+  display: flex; align-items: center; gap: 7px;
+  cursor: pointer; font-size: .82rem; font-weight: 600;
+  font-family: var(--font); color: var(--white); transition: border-color .15s;
+  box-shadow: 0 4px 18px rgba(0,0,0,.3);
+}
+.list-toggle-btn:hover { border-color: var(--teal); color: var(--teal); }
 
-  /* ── PRODUCT GRID ── */
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
-  }
+/* station list side panel */
+.side-panel {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 288px;
+  background: var(--panel); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transform: translateX(-100%); transition: transform .28s cubic-bezier(.4,0,.2,1);
+  z-index: 20;
+}
+.side-panel.open { transform: translateX(0); }
+.sp-header {
+  padding: 1rem 1rem .7rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sp-title { font-family: var(--display); font-size: .95rem; font-weight: 700; }
+.sp-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 17px; padding: 4px; }
+.station-list { overflow-y: auto; flex: 1; padding: .6rem; scrollbar-width: thin; scrollbar-color: var(--navy3) transparent; }
+.srow {
+  display: flex; align-items: center; gap: 9px; padding: 9px;
+  border-radius: 9px; cursor: pointer; transition: background .12s; margin-bottom: 3px;
+}
+.srow:hover { background: var(--navy3); }
+.srow.active { background: rgba(42,181,160,.12); border: 1px solid rgba(42,181,160,.22); }
+.srow-ico { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0; }
+.srow-info { flex: 1; min-width: 0; }
+.srow-name { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.srow-sub  { font-size: .72rem; color: var(--muted); }
+.srow-badge { padding: 3px 7px; border-radius: 99px; font-size: .68rem; font-weight: 700; flex-shrink: 0; }
 
-  .product-card {
-    background: var(--white); border-radius: var(--card-r); border: 1px solid var(--border);
-    overflow: hidden; cursor: pointer;
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
-    animation: fadeUp .35s ease both;
-  }
-  .product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(27,42,61,.1);
-    border-color: var(--teal);
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* detail panel */
+.detail-panel {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 30;
+  background: var(--panel); border-top: 1px solid var(--border);
+  border-radius: 18px 18px 0 0;
+  transform: translateY(100%); transition: transform .32s cubic-bezier(.4,0,.2,1);
+  max-height: 72vh; overflow-y: auto;
+  box-shadow: 0 -10px 36px rgba(0,0,0,.4);
+}
+.detail-panel.open { transform: translateY(0); }
+.dp-handle { width: 34px; height: 4px; background: var(--border); border-radius: 99px; margin: 11px auto 0; }
+.dp-inner { padding: .9rem 1.4rem 1.8rem; }
+.dp-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: .9rem; }
+.dp-name { font-family: var(--display); font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
+.dp-sub  { font-size: .82rem; color: var(--muted); margin-top: 3px; }
+.dp-close { background: var(--navy3); border: none; color: var(--muted); cursor: pointer; width: 30px; height: 30px; border-radius: 7px; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 10px; }
+.dp-slots { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin: .8rem 0; }
+.dp-slot { border-radius: 10px; padding: 9px 6px; text-align: center; border: 1.5px solid var(--border); background: var(--navy2); }
+.dp-slot.free   { border-color: rgba(52,199,123,.35);  background: rgba(52,199,123,.07); }
+.dp-slot.busy   { border-color: rgba(245,166,35,.35);  background: rgba(245,166,35,.07); }
+.dp-slot.broken { border-color: rgba(224,82,82,.3);    background: rgba(224,82,82,.05); }
+.dp-slot-ico    { font-size: 1.3rem; margin-bottom: 3px; }
+.dp-slot-type   { font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.dp-slot-status { font-size: .74rem; font-weight: 600; margin-top: 2px; }
+.dp-slot.free   .dp-slot-status { color: var(--green); }
+.dp-slot.busy   .dp-slot-status { color: var(--orange); }
+.dp-slot.broken .dp-slot-status { color: var(--red); }
+.dp-stats { display: flex; gap: 10px; margin: .65rem 0; }
+.dp-stat  { flex: 1; background: var(--navy2); border-radius: 9px; padding: 9px; text-align: center; border: 1px solid var(--border); }
+.dp-stat-val   { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--teal); }
+.dp-stat-label { font-size: .68rem; color: var(--muted); margin-top: 2px; }
+.dp-stars { display: flex; align-items: center; gap: 5px; font-size: .84rem; margin: .6rem 0; }
+.dp-stars .s  { color: var(--orange); letter-spacing: 1px; }
+.dp-stars .ct { color: var(--muted); font-size: .76rem; }
+.dp-comment { background: var(--navy2); border-radius: 9px; padding: .65rem .9rem; font-size: .82rem; color: var(--muted); line-height: 1.6; border-left: 3px solid var(--teal); margin: .6rem 0; font-style: italic; }
+.dp-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: .9rem; }
+.dp-btn { border: none; border-radius: 10px; padding: 11px; font-size: .85rem; font-weight: 700; font-family: var(--font); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all .16s; }
+.dp-btn-primary   { background: var(--teal); color: var(--navy); }
+.dp-btn-primary:hover   { background: var(--teal-dk); }
+.dp-btn-secondary { background: var(--navy3); color: var(--white); border: 1px solid var(--border); }
+.dp-btn-secondary:hover { border-color: var(--teal); color: var(--teal); }
+.dp-btn-full { grid-column:1/-1; background: var(--navy3); color: var(--muted); border: 1px solid var(--border); font-size: .78rem; }
+.dp-btn-full:hover { border-color: var(--teal); color: var(--teal); }
 
-  .card-img {
-    width: 100%; aspect-ratio: 1.3/1;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 3.5rem; position: relative;
-    transition: transform .2s;
-  }
-  .product-card:hover .card-img { transform: scale(1.03); }
+/* route bar */
+.route-bar {
+  position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%);
+  background: var(--panel); border: 1px solid var(--teal);
+  border-radius: 13px; padding: 9px 18px;
+  display: none; align-items: center; gap: 13px; z-index: 25;
+  box-shadow: 0 0 22px var(--teal-glow);
+}
+.route-bar.show { display: flex; animation: slideUp .35s cubic-bezier(.34,1.56,.64,1); }
+@keyframes slideUp { from{opacity:0;transform:translateX(-50%) translateY(18px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
+.rs { text-align: center; }
+.rs-val   { font-family: var(--mono); font-size: 1rem; color: var(--teal); font-weight: 500; }
+.rs-label { font-size: .68rem; color: var(--muted); }
+.rs-div   { width: 1px; height: 28px; background: var(--border); }
+.rs-cancel { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .78rem; font-family: var(--font); padding: 3px 7px; border-radius: 5px; }
+.rs-cancel:hover { color: var(--red); }
 
-  .card-badge {
-    position: absolute; top: 10px; left: 10px;
-    background: var(--teal); color: #fff;
-    font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 99px;
-    letter-spacing: .04em;
-  }
-  .card-badge.new    { background: var(--green); }
-  .card-badge.sale   { background: var(--red); }
-  .card-badge.popular{ background: var(--orange); }
+/* ══════════════════════════════════════════════════════════════════════════════
+   SHOP VIEW
+══════════════════════════════════════════════════════════════════════════════ */
+#viewShop {
+  background: var(--bg);
+  overflow-y: auto;
+  color: var(--navy);
+}
 
-  .verified-badge {
-    position: absolute; top: 10px; right: 10px;
-    background: rgba(255,255,255,.95); border: 1px solid var(--border);
-    border-radius: 99px; padding: 3px 9px;
-    font-size: .68rem; font-weight: 600; color: var(--teal);
-    display: flex; align-items: center; gap: 4px;
-  }
+/* hero */
+.shop-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #243B55 100%);
+  color: var(--white); padding: 2rem 1.5rem; position: relative; overflow: hidden;
+}
+.shop-hero::after { content:'⚡'; position:absolute; right:2rem; top:50%; transform:translateY(-50%); font-size:8rem; opacity:.04; pointer-events:none; }
+.shop-hero h1 { font-family: var(--display); font-size: 1.7rem; font-weight: 700; margin-bottom: .35rem; }
+.shop-hero h1 span { color: var(--teal); }
+.shop-hero p { color: rgba(255,255,255,.58); font-size: .9rem; max-width: 460px; }
+.hero-badges { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+.hero-badge { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.82); border-radius: 99px; padding: 4px 12px; font-size: .76rem; font-weight: 500; }
 
-  .card-body { padding: 1rem; }
-  .card-cat { font-size: .72rem; font-weight: 600; color: var(--teal); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
-  .card-name { font-size: .95rem; font-weight: 600; color: var(--navy); margin-bottom: .35rem; line-height: 1.3; }
-  .card-compat { font-size: .78rem; color: var(--muted); margin-bottom: .75rem; line-height: 1.4; }
+/* shop layout */
+.shop-layout { display: flex; max-width: 1200px; margin: 0 auto; padding: 1.5rem; gap: 1.5rem; }
+.shop-sidebar { width: 200px; flex-shrink: 0; }
+.filter-card { background: var(--white); border-radius: 14px; border: 1px solid var(--border-lt); padding: 1.1rem; margin-bottom: .85rem; }
+.filter-title { font-size: .72rem; font-weight: 700; color: var(--muted-lt); letter-spacing: .07em; text-transform: uppercase; margin-bottom: .8rem; }
+.filter-item { display: flex; align-items: center; gap: 7px; padding: 5px 0; cursor: pointer; font-size: .85rem; color: var(--navy); user-select: none; transition: color .12s; }
+.filter-item:hover { color: var(--teal); }
+.filter-item input { accent-color: var(--teal); width: 14px; height: 14px; cursor: pointer; }
+.range-slider { width: 100%; accent-color: var(--teal); cursor: pointer; margin-top: .4rem; }
+.range-labels { display: flex; justify-content: space-between; font-size: .74rem; color: var(--muted-lt); margin-top: 3px; }
 
-  .card-footer { display: flex; align-items: center; justify-content: space-between; }
-  .card-price { font-size: 1.05rem; font-weight: 700; color: var(--navy); font-family: var(--mono); }
-  .card-price .old-price { font-size: .78rem; color: var(--muted); text-decoration: line-through; font-weight: 400; display: block; }
+/* product area */
+.shop-main { flex: 1; min-width: 0; }
+.shop-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; flex-wrap: wrap; gap: .6rem; }
+.result-count { font-size: .84rem; color: var(--muted-lt); }
+.result-count strong { color: var(--navy); }
+.sort-sel { border: 1.5px solid var(--border-lt); border-radius: 8px; padding: 7px 11px; font-family: var(--font); font-size: .82rem; color: var(--navy); background: var(--white); outline: none; cursor: pointer; }
+.sort-sel:focus { border-color: var(--teal); }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1.1rem; }
 
-  .add-btn {
-    background: var(--teal); color: #fff;
-    border: none; border-radius: 8px; padding: 7px 14px;
-    font-size: .82rem; font-weight: 600; font-family: var(--font);
-    cursor: pointer; transition: background .15s, transform .1s;
-    white-space: nowrap;
-  }
-  .add-btn:hover { background: var(--teal-dk); }
-  .add-btn:active { transform: scale(.95); }
-  .add-btn.added { background: var(--green); }
+/* product card */
+.pcard {
+  background: var(--white); border-radius: 14px; border: 1px solid var(--border-lt);
+  overflow: hidden; cursor: pointer;
+  transition: transform .17s, box-shadow .17s, border-color .17s;
+  animation: fadeUp .3s ease both;
+}
+.pcard:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(27,42,61,.1); border-color: var(--teal); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
+.pcard-img { width:100%; aspect-ratio:1.3/1; display:flex; align-items:center; justify-content:center; font-size:3.2rem; position:relative; transition:transform .18s; }
+.pcard:hover .pcard-img { transform: scale(1.04); }
+.pcard-badge { position:absolute; top:9px; left:9px; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:99px; letter-spacing:.04em; }
+.pcard-badge.popular { background: var(--orange); color:#fff; }
+.pcard-badge.new     { background: var(--green);  color:#fff; }
+.pcard-badge.sale    { background: var(--red);    color:#fff; }
+.verified-tag { position:absolute; top:9px; right:9px; background:rgba(255,255,255,.95); border:1px solid var(--border-lt); border-radius:99px; padding:2px 8px; font-size:.65rem; font-weight:600; color:var(--teal); }
+.pcard-body { padding: .9rem; }
+.pcard-cat  { font-size:.7rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.28rem; }
+.pcard-name { font-size:.9rem; font-weight:600; color:var(--navy); margin-bottom:.28rem; line-height:1.3; }
+.pcard-compat { font-size:.75rem; color:var(--muted-lt); margin-bottom:.65rem; line-height:1.4; }
+.pcard-foot { display:flex; align-items:center; justify-content:space-between; }
+.pcard-price { font-size:1rem; font-weight:700; color:var(--navy); font-family:var(--mono); }
+.pcard-price .old { font-size:.74rem; color:var(--muted-lt); text-decoration:line-through; font-weight:400; display:block; }
+.pcard-stars { font-size:.72rem; color:var(--orange); margin-bottom:.5rem; }
+.pcard-stars span { color:var(--muted-lt); }
+.add-btn { background:var(--teal); color:#fff; border:none; border-radius:8px; padding:7px 13px; font-size:.78rem; font-weight:600; font-family:var(--font); cursor:pointer; transition:all .14s; }
+.add-btn:hover { background:var(--teal-dk); }
+.add-btn:active { transform:scale(.95); }
+.add-btn.added { background:var(--green); }
 
-  /* ── STARS ── */
-  .stars { color: var(--orange); font-size: .78rem; margin-bottom: .5rem; }
-  .stars span { color: var(--muted); font-size: .75rem; margin-left: 3px; }
+/* ── CART DRAWER ── */
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:300; opacity:0; pointer-events:none; transition:opacity .22s; }
+.overlay.show { opacity:1; pointer-events:all; }
+.drawer {
+  position:fixed; top:0; right:0; height:100%; width:360px; max-width:95vw;
+  background:var(--panel); z-index:400;
+  transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column;
+  box-shadow:-8px 0 36px rgba(0,0,0,.3);
+}
+.drawer.open { transform:translateX(0); }
+.drawer-hdr { padding:1.1rem 1.4rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.drawer-title { font-size:1rem; font-weight:700; }
+.d-close { background:var(--navy3); border:1px solid var(--border); border-radius:7px; width:30px; height:30px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
+.d-close:hover { background:var(--navy2); }
+.drawer-items { flex:1; overflow-y:auto; padding:.9rem 1.2rem; }
+.cart-item { display:flex; gap:11px; padding:12px 0; border-bottom:1px solid var(--border); align-items:center; }
+.ci-ico { font-size:1.8rem; width:50px; height:50px; background:var(--navy2); border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border); }
+.ci-info { flex:1; }
+.ci-name  { font-size:.84rem; font-weight:600; color:var(--white); margin-bottom:2px; }
+.ci-price { font-size:.82rem; color:var(--teal); font-weight:600; font-family:var(--mono); }
+.qty-ctrl { display:flex; align-items:center; gap:7px; margin-top:5px; }
+.qty-btn  { width:24px; height:24px; border:1px solid var(--border); border-radius:5px; background:var(--navy3); cursor:pointer; font-size:.95rem; display:flex; align-items:center; justify-content:center; color:var(--white); transition:background .12s; }
+.qty-btn:hover { background:rgba(42,181,160,.2); border-color:var(--teal); }
+.qty-val  { font-size:.84rem; font-weight:600; min-width:18px; text-align:center; }
+.rm-btn   { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:4px; border-radius:5px; }
+.rm-btn:hover { color:var(--red); }
+.empty-cart { text-align:center; padding:3rem 1rem; color:var(--muted); }
+.empty-cart .ei { font-size:2.8rem; margin-bottom:.6rem; }
+.drawer-foot { padding:1.1rem 1.4rem; border-top:1px solid var(--border); }
+.cart-total-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:.9rem; }
+.ct-label { font-size:.86rem; color:var(--muted); }
+.ct-val   { font-size:1.2rem; font-weight:700; font-family:var(--mono); }
+.checkout-btn { width:100%; background:var(--teal); color:var(--navy); border:none; border-radius:10px; padding:12px; font-size:.95rem; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .15s; }
+.checkout-btn:hover { background:var(--teal-dk); }
+.checkout-note { text-align:center; font-size:.74rem; color:var(--muted); margin-top:.5rem; }
 
-  /* ── CART DRAWER ── */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(27,42,61,.45);
-    z-index: 200; opacity: 0; pointer-events: none; transition: opacity .25s;
-  }
-  .overlay.show { opacity: 1; pointer-events: all; }
-  .drawer {
-    position: fixed; top: 0; right: 0; height: 100%; width: 380px; max-width: 95vw;
-    background: var(--white); z-index: 300;
-    transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
-    display: flex; flex-direction: column;
-    box-shadow: -8px 0 40px rgba(27,42,61,.12);
-  }
-  .drawer.open { transform: translateX(0); }
+/* ── PRODUCT MODAL ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:500; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .2s; }
+.modal-overlay.show { opacity:1; pointer-events:all; }
+.modal { background:var(--panel); border:1px solid var(--border); border-radius:18px; width:100%; max-width:520px; padding:1.75rem; position:relative; transform:scale(.93); transition:transform .22s cubic-bezier(.34,1.56,.64,1); max-height:88vh; overflow-y:auto; }
+.modal-overlay.show .modal { transform:scale(1); }
+.modal-close { position:absolute; top:.9rem; right:.9rem; background:var(--navy3); border:1px solid var(--border); border-radius:7px; width:30px; height:30px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
+.modal-ico   { font-size:4rem; text-align:center; padding:.9rem; background:var(--navy2); border-radius:11px; margin-bottom:1.1rem; }
+.modal-cat   { font-size:.74rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.07em; }
+.modal-name  { font-size:1.3rem; font-weight:700; margin:.3rem 0 .45rem; color:var(--white); }
+.modal-desc  { font-size:.87rem; color:var(--muted); line-height:1.6; margin-bottom:.9rem; }
+.modal-compat { background:rgba(42,181,160,.1); border:1px solid rgba(42,181,160,.25); border-radius:8px; padding:.55rem .9rem; font-size:.82rem; color:var(--teal); margin-bottom:.9rem; }
+.modal-foot { display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:.9rem; margin-top:.9rem; }
+.modal-price { font-size:1.4rem; font-weight:700; font-family:var(--mono); color:var(--white); }
+.modal-add  { background:var(--teal); color:var(--navy); border:none; border-radius:9px; padding:10px 24px; font-size:.92rem; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .14s; }
+.modal-add:hover { background:var(--teal-dk); }
 
-  .drawer-header {
-    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .drawer-title { font-size: 1.1rem; font-weight: 700; }
-  .close-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background .12s; }
-  .close-btn:hover { background: var(--border); }
+/* ── CHECKOUT ── */
+.co-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:600;
+  display:flex; align-items:center; justify-content:center; padding:1rem;
+  opacity:0; pointer-events:none; transition:opacity .22s;
+}
+.co-overlay.show { opacity:1; pointer-events:all; }
+.co-modal {
+  background:var(--panel); border:1px solid var(--border); border-radius:18px;
+  width:100%; max-width:820px; max-height:90vh;
+  display:flex; flex-direction:column;
+  transform:translateY(24px) scale(.97);
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+  overflow:hidden;
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+}
+.co-overlay.show .co-modal { transform:translateY(0) scale(1); }
+.co-hdr { padding:1.2rem 1.6rem .9rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.co-title { font-size:1rem; font-weight:700; }
+.co-x { background:var(--navy3); border:1px solid var(--border); border-radius:7px; width:30px; height:30px; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
+.co-x:hover { background:var(--navy2); }
+.co-steps { display:flex; align-items:center; gap:0; padding:.8rem 1.6rem; border-bottom:1px solid var(--border); flex-shrink:0; overflow-x:auto; scrollbar-width:none; }
+.co-steps::-webkit-scrollbar { display:none; }
+.co-step { display:flex; align-items:center; gap:7px; font-size:.8rem; font-weight:500; color:var(--muted); white-space:nowrap; }
+.co-step.active { color:var(--teal); }
+.co-step.done   { color:var(--green); }
+.co-step-n { width:24px; height:24px; border-radius:50%; background:var(--navy3); color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:.74rem; font-weight:700; flex-shrink:0; transition:all .18s; }
+.co-step.active .co-step-n { background:var(--teal);  color:var(--navy); }
+.co-step.done   .co-step-n { background:var(--green); color:#fff; }
+.co-sep { width:28px; height:2px; background:var(--border); margin:0 3px; flex-shrink:0; }
+.co-sep.done { background:var(--green); }
+.co-body { display:flex; flex:1; overflow:hidden; min-height:0; }
+.co-main { flex:1; overflow-y:auto; padding:1.5rem 1.6rem; }
+.co-aside { width:260px; border-left:1px solid var(--border); padding:1.3rem; overflow-y:auto; background:var(--navy2); flex-shrink:0; }
+.co-sec-title { font-size:.7rem; font-weight:700; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:.85rem; }
+.co-row { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; margin-bottom:.85rem; }
+.co-row.one { grid-template-columns:1fr; }
+.co-row.three { grid-template-columns:1fr 1fr 1fr; }
+.co-field { display:flex; flex-direction:column; gap:4px; }
+.co-label { font-size:.77rem; font-weight:600; color:var(--muted); }
+.co-label span { color:var(--red); }
+.co-input, .co-sel {
+  border:1.5px solid var(--border); border-radius:8px; padding:8px 11px;
+  font-size:.87rem; font-family:var(--font); color:var(--white); background:var(--navy3); outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.co-input:focus, .co-sel:focus { border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-glow); }
+.co-input.err { border-color:var(--red); }
+.co-opts { display:flex; flex-direction:column; gap:.55rem; margin-bottom:1.1rem; }
+.co-opt {
+  border:1.5px solid var(--border); border-radius:9px; padding:.65rem .9rem; cursor:pointer;
+  display:flex; align-items:center; gap:10px; transition:all .14s;
+}
+.co-opt.sel { border-color:var(--teal); background:rgba(42,181,160,.08); }
+.co-opt input[type=radio] { accent-color:var(--teal); width:15px; height:15px; flex-shrink:0; }
+.co-opt-label { font-size:.87rem; font-weight:600; color:var(--white); }
+.co-opt-sub   { font-size:.75rem; color:var(--muted); }
+.co-opt-price { margin-left:auto; font-weight:700; font-family:var(--mono); font-size:.87rem; color:var(--teal); }
+.co-pay-tabs  { display:flex; gap:7px; margin-bottom:.75rem; }
+.co-pay-tab {
+  flex:1; border:1.5px solid var(--border); border-radius:8px; padding:.55rem; cursor:pointer;
+  text-align:center; font-size:.8rem; font-weight:600; background:var(--navy3); color:var(--muted);
+  font-family:var(--font); transition:all .14s;
+}
+.co-pay-tab.sel { border-color:var(--teal); background:rgba(42,181,160,.1); color:var(--teal); }
+/* aside */
+.co-aside-title { font-size:.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.9rem; }
+.co-ai { display:flex; align-items:center; gap:9px; padding:7px 0; border-bottom:1px solid var(--border); }
+.co-ai-ico { font-size:1.3rem; width:34px; height:34px; background:var(--navy3); border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.co-ai-name  { font-size:.8rem; font-weight:500; flex:1; line-height:1.3; color:var(--white); }
+.co-ai-price { font-size:.8rem; font-weight:700; font-family:var(--mono); color:var(--teal); flex-shrink:0; }
+.co-totals { margin-top:.65rem; }
+.co-trow { display:flex; justify-content:space-between; font-size:.83rem; padding:4px 0; color:var(--muted); }
+.co-trow.total { font-size:.95rem; font-weight:700; color:var(--white); border-top:1px solid var(--border); padding-top:9px; margin-top:3px; }
+/* footer */
+.co-foot { padding:.9rem 1.6rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--panel); }
+.co-back { background:none; border:1.5px solid var(--border); border-radius:8px; padding:8px 18px; font-size:.87rem; font-weight:600; font-family:var(--font); cursor:pointer; color:var(--white); transition:border-color .14s; }
+.co-back:hover { border-color:var(--white); }
+.co-next { background:var(--teal); color:var(--navy); border:none; border-radius:8px; padding:9px 24px; font-size:.87rem; font-weight:700; font-family:var(--font); cursor:pointer; transition:background .14s; }
+.co-next:hover { background:var(--teal-dk); }
+.co-next:disabled { background:var(--navy3); color:var(--muted); cursor:not-allowed; }
+/* confirm */
+.co-confirm { text-align:center; padding:2rem 1.5rem; }
+.co-confirm-ico { font-size:3.8rem; margin-bottom:.9rem; animation:popIn .45s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popIn { from{transform:scale(0)}to{transform:scale(1)} }
+.co-confirm h2 { font-size:1.5rem; font-weight:700; margin-bottom:.45rem; }
+.co-confirm p  { color:var(--muted); font-size:.9rem; max-width:380px; margin:0 auto 1.3rem; line-height:1.6; }
+.co-confirm-box { background:var(--navy2); border-radius:11px; padding:1.1rem; text-align:left; max-width:400px; margin:0 auto 1.3rem; }
+.co-cr { display:flex; justify-content:space-between; font-size:.85rem; padding:4px 0; color:var(--muted); }
+.co-cr.bold { font-weight:700; color:var(--white); border-top:1px solid var(--border); padding-top:9px; margin-top:5px; font-size:.9rem; }
+.co-cacts { display:flex; gap:9px; justify-content:center; flex-wrap:wrap; }
+.co-cact { border:none; border-radius:9px; padding:9px 22px; font-size:.87rem; font-weight:600; font-family:var(--font); cursor:pointer; }
+.co-cact-p { background:var(--teal); color:var(--navy); }
+.co-cact-s { background:var(--navy3); border:1.5px solid var(--border); color:var(--white); }
 
-  .drawer-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
-  .cart-item {
-    display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border);
-    align-items: center;
-  }
-  .cart-item-ico { font-size: 2rem; width: 54px; height: 54px; background: var(--bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .cart-item-info { flex: 1; }
-  .cart-item-name { font-size: .875rem; font-weight: 600; margin-bottom: 3px; }
-  .cart-item-price { font-size: .85rem; color: var(--teal); font-weight: 600; font-family: var(--mono); }
-  .qty-ctrl { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
-  .qty-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; color: var(--navy); transition: background .12s; }
-  .qty-btn:hover { background: var(--teal-lt); border-color: var(--teal); }
-  .qty-val { font-size: .875rem; font-weight: 600; min-width: 20px; text-align: center; }
-  .remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 4px; border-radius: 6px; transition: color .12s; }
-  .remove-btn:hover { color: var(--red); }
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:72px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--navy2); border:1px solid var(--border); color:var(--white);
+  border-radius:10px; padding:10px 20px; font-size:.84rem; font-weight:500;
+  z-index:700; opacity:0; pointer-events:none;
+  transition:all .28s cubic-bezier(.34,1.56,.64,1); white-space:nowrap;
+  backdrop-filter:blur(10px); box-shadow:0 4px 18px rgba(0,0,0,.3);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-  .empty-cart { text-align: center; padding: 3rem 1rem; color: var(--muted); }
-  .empty-cart .ico { font-size: 3rem; margin-bottom: .75rem; }
+/* proto banner */
+.proto-banner {
+  background:rgba(245,166,35,.12); border-bottom:1px solid rgba(245,166,35,.25);
+  padding:7px 1.5rem; font-size:.78rem; color:rgba(245,166,35,.9);
+  display:flex; align-items:center; gap:7px; font-weight:500; flex-shrink:0;
+}
 
-  .drawer-footer { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
-  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .cart-total-label { font-size: .9rem; color: var(--muted); }
-  .cart-total-val { font-size: 1.25rem; font-weight: 700; font-family: var(--mono); }
-  .checkout-btn {
-    width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 10px;
-    padding: 13px; font-size: 1rem; font-weight: 700; font-family: var(--font);
-    cursor: pointer; transition: background .15s;
-  }
-  .checkout-btn:hover { background: var(--teal-dk); }
-  .checkout-note { text-align: center; font-size: .78rem; color: var(--muted); margin-top: .6rem; }
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--navy3); border-radius: 99px; }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--navy); color: #fff; border-radius: 10px; padding: 12px 22px;
-    font-size: .9rem; font-weight: 500; z-index: 500;
-    transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-    opacity: 0; pointer-events: none; white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-  /* ── PROTOTYPE BANNER ── */
-  .proto-banner {
-    background: linear-gradient(90deg, #FFF3CD, #FFF8E8);
-    border-bottom: 1px solid #F5DEB3;
-    padding: 9px 2rem; font-size: .82rem; color: #7A5700;
-    display: flex; align-items: center; gap: 8px;
-    font-weight: 500;
-  }
-  .proto-banner strong { font-weight: 700; }
-
-  /* ── PRODUCT MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(27,42,61,.5);
-    z-index: 400; display: flex; align-items: center; justify-content: center;
-    padding: 1rem;
-    opacity: 0; pointer-events: none; transition: opacity .2s;
-  }
-  .modal-overlay.show { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--white); border-radius: 20px; width: 100%; max-width: 560px;
-    padding: 2rem; position: relative;
-    transform: scale(.92); transition: transform .25s cubic-bezier(.34,1.56,.64,1);
-    max-height: 90vh; overflow-y: auto;
-  }
-  .modal-overlay.show .modal { transform: scale(1); }
-  .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
-  .modal-close:hover { background: var(--border); }
-  .modal-ico { font-size: 4.5rem; text-align: center; padding: 1rem; background: var(--bg); border-radius: 12px; margin-bottom: 1.25rem; }
-  .modal-cat { font-size: .78rem; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .08em; }
-  .modal-name { font-size: 1.4rem; font-weight: 700; margin: .35rem 0 .5rem; }
-  .modal-desc { font-size: .9rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
-  .modal-compat { background: var(--teal-lt); border-radius: 8px; padding: .6rem 1rem; font-size: .85rem; color: var(--teal-dk); margin-bottom: 1rem; }
-  .modal-compat strong { font-weight: 600; }
-  .modal-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1rem; }
-  .modal-price { font-size: 1.5rem; font-weight: 700; font-family: var(--mono); }
-  .modal-add-btn { background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 11px 28px; font-size: 1rem; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background .15s; }
-  .modal-add-btn:hover { background: var(--teal-dk); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .hero::after { display: none; }
-    .search-input { width: 160px; }
-    .nav-tabs { display: none; }
-  }
-
-  /* ── CHECKOUT OVERLAY ── */
-  .co-overlay {
-    position: fixed; inset: 0; background: rgba(27,42,61,.55);
-    z-index: 500; display: flex; align-items: center; justify-content: center;
-    padding: 1rem; opacity: 0; pointer-events: none; transition: opacity .25s;
-  }
-  .co-overlay.show { opacity: 1; pointer-events: all; }
-
-  .co-modal {
-    background: var(--white); border-radius: 20px;
-    width: 100%; max-width: 860px; max-height: 92vh;
-    display: flex; flex-direction: column;
-    overflow: hidden;
-    transform: translateY(30px) scale(.97);
-    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-    box-shadow: 0 32px 80px rgba(27,42,61,.22);
-  }
-  .co-overlay.show .co-modal { transform: translateY(0) scale(1); }
-
-  /* stepper */
-  .co-header {
-    padding: 1.5rem 2rem 1rem;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .co-title { font-size: 1.1rem; font-weight: 700; }
-  .co-close { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
-  .co-close:hover { background: var(--border); }
-
-  .co-steps {
-    display: flex; align-items: center; gap: 0;
-    padding: 1rem 2rem; border-bottom: 1px solid var(--border);
-    flex-shrink: 0; overflow-x: auto;
-  }
-  .co-step {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .82rem; font-weight: 500; color: var(--muted);
-    white-space: nowrap;
-  }
-  .co-step.active { color: var(--teal); }
-  .co-step.done   { color: var(--green); }
-  .co-step-num {
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--border); color: var(--muted);
-    display: flex; align-items: center; justify-content: center;
-    font-size: .78rem; font-weight: 700; flex-shrink: 0;
-    transition: all .2s;
-  }
-  .co-step.active .co-step-num { background: var(--teal); color: #fff; }
-  .co-step.done   .co-step-num { background: var(--green); color: #fff; }
-  .co-step-sep { width: 32px; height: 2px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
-  .co-step-sep.done { background: var(--green); }
-
-  /* body */
-  .co-body {
-    display: flex; flex: 1; overflow: hidden; min-height: 0;
-  }
-  .co-main {
-    flex: 1; overflow-y: auto; padding: 1.75rem 2rem;
-  }
-  .co-aside {
-    width: 280px; border-left: 1px solid var(--border);
-    padding: 1.5rem; overflow-y: auto; background: var(--bg);
-    flex-shrink: 0;
-  }
-
-  /* form */
-  .co-section-title { font-size: .75rem; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1rem; }
-  .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-  .co-row.single { grid-template-columns: 1fr; }
-  .co-row.triple { grid-template-columns: 1fr 1fr 1fr; }
-  .co-field { display: flex; flex-direction: column; gap: 5px; }
-  .co-label { font-size: .8rem; font-weight: 600; color: var(--navy); }
-  .co-label span { color: var(--red); }
-  .co-input, .co-select {
-    border: 1.5px solid var(--border); border-radius: 9px;
-    padding: 9px 13px; font-size: .9rem; font-family: var(--font);
-    color: var(--navy); background: var(--white); outline: none;
-    transition: border-color .15s, box-shadow .15s;
-  }
-  .co-input:focus, .co-select:focus {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(42,181,160,.12);
-  }
-  .co-input.err { border-color: var(--red); }
-  .co-err-msg { font-size: .75rem; color: var(--red); margin-top: 2px; display: none; }
-  .co-input.err + .co-err-msg { display: block; }
-
-  /* delivery options */
-  .co-options { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.25rem; }
-  .co-option {
-    border: 1.5px solid var(--border); border-radius: 10px;
-    padding: .75rem 1rem; cursor: pointer;
-    display: flex; align-items: center; gap: 12px;
-    transition: border-color .15s, background .15s;
-  }
-  .co-option.selected { border-color: var(--teal); background: var(--teal-lt); }
-  .co-option input[type=radio] { accent-color: var(--teal); width: 16px; height: 16px; flex-shrink: 0; }
-  .co-option-label { font-size: .9rem; font-weight: 600; }
-  .co-option-sub { font-size: .78rem; color: var(--muted); }
-  .co-option-price { margin-left: auto; font-weight: 700; font-family: var(--mono); font-size: .9rem; color: var(--teal); }
-
-  /* payment */
-  .co-card-row { display: flex; gap: 8px; margin-bottom: .75rem; }
-  .co-pay-tab {
-    flex: 1; border: 1.5px solid var(--border); border-radius: 9px;
-    padding: .6rem; cursor: pointer; text-align: center; font-size: .82rem; font-weight: 600;
-    background: var(--white); color: var(--muted); transition: all .15s;
-    font-family: var(--font);
-  }
-  .co-pay-tab.sel { border-color: var(--teal); background: var(--teal-lt); color: var(--teal); }
-
-  /* order summary sidebar */
-  .co-aside-title { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1rem; }
-  .co-aside-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
-  .co-aside-ico { font-size: 1.4rem; width: 36px; height: 36px; background: var(--white); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); flex-shrink: 0; }
-  .co-aside-name { font-size: .82rem; font-weight: 500; line-height: 1.3; flex: 1; }
-  .co-aside-price { font-size: .82rem; font-weight: 700; font-family: var(--mono); flex-shrink: 0; }
-  .co-aside-totals { margin-top: .75rem; }
-  .co-aside-line { display: flex; justify-content: space-between; font-size: .85rem; padding: 5px 0; color: var(--muted); }
-  .co-aside-line.total { font-size: 1rem; font-weight: 700; color: var(--navy); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px; }
-
-  /* footer buttons */
-  .co-footer {
-    padding: 1rem 2rem; border-top: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; background: var(--white);
-  }
-  .co-back-btn { background: none; border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 20px; font-size: .9rem; font-weight: 600; font-family: var(--font); cursor: pointer; color: var(--navy); transition: border-color .15s; }
-  .co-back-btn:hover { border-color: var(--navy); }
-  .co-next-btn { background: var(--teal); color: #fff; border: none; border-radius: 9px; padding: 10px 28px; font-size: .9rem; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background .15s; }
-  .co-next-btn:hover { background: var(--teal-dk); }
-  .co-next-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
-
-  /* confirmation */
-  .co-confirm {
-    text-align: center; padding: 2.5rem 2rem;
-  }
-  .co-confirm-icon { font-size: 4rem; margin-bottom: 1rem; animation: popIn .5s cubic-bezier(.34,1.56,.64,1); }
-  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-  .co-confirm h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: .5rem; }
-  .co-confirm p { color: var(--muted); font-size: .95rem; max-width: 400px; margin: 0 auto 1.5rem; line-height: 1.6; }
-  .co-confirm-order { background: var(--bg); border-radius: 12px; padding: 1.25rem; text-align: left; max-width: 420px; margin: 0 auto 1.5rem; }
-  .co-confirm-row { display: flex; justify-content: space-between; font-size: .88rem; padding: 4px 0; }
-  .co-confirm-row.bold { font-weight: 700; font-size: .95rem; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 6px; }
-  .co-confirm-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .co-action-btn { border: none; border-radius: 9px; padding: 10px 24px; font-size: .9rem; font-weight: 600; font-family: var(--font); cursor: pointer; }
-  .co-action-primary { background: var(--teal); color: #fff; }
-  .co-action-secondary { background: var(--bg); border: 1.5px solid var(--border); color: var(--navy); }
-
-  @media (max-width: 700px) {
-    .co-aside { display: none; }
-    .co-row { grid-template-columns: 1fr; }
-    .co-row.triple { grid-template-columns: 1fr 1fr; }
-  }
-
+@media(max-width:700px) {
+  .shop-sidebar { display:none; }
+  .co-aside { display:none; }
+  .co-row { grid-template-columns:1fr; }
+  .co-row.three { grid-template-columns:1fr 1fr; }
+  .map-chips { display:none; }
+}
 </style>
 </head>
 <body>
 
-<!-- Prototype Banner -->
-<div class="proto-banner">
-  🧪 <strong>Prototype</strong> — EVen better Accessory Marketplace · Design Sprint validation · Not a real store
-</div>
-
-<!-- Top Bar -->
+<!-- TOP BAR -->
 <header class="topbar">
   <a class="logo" href="#">
     <div class="logo-icon">⚡</div>
-    EV<span>en</span> better
+    EV<em>en</em> better
   </a>
-
-  <nav class="nav-tabs">
-    <button class="nav-tab" onclick="switchTab(this,'map')">Charger Map</button>
-    <button class="nav-tab active" onclick="switchTab(this,'shop')">Shop</button>
-    <button class="nav-tab" onclick="switchTab(this,'mechanic')">Mechanics</button>
-    <button class="nav-tab" onclick="switchTab(this,'guides')">Guides</button>
-  </nav>
-
-  <div class="topbar-right">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" type="text" placeholder="Search accessories…" oninput="filterProducts()" id="searchInput">
-    </div>
-    <button class="cart-btn" onclick="toggleCart()">
-      🛒 Cart
-      <span class="cart-badge" id="cartBadge">0</span>
-    </button>
+  <div class="search-wrap">
+    <span class="search-ico">🔍</span>
+    <input class="search-bar" id="searchBar" type="text" placeholder="Search…" oninput="onSearch()" autocomplete="off">
   </div>
+  <div class="map-chips" id="mapChips">
+    <button class="chip on" data-f="all"     onclick="setFilter(this,'all')">All</button>
+    <button class="chip"    data-f="free"    onclick="setFilter(this,'free')">🟢 Free</button>
+    <button class="chip"    data-f="fast"    onclick="setFilter(this,'fast')">⚡ Fast DC</button>
+    <button class="chip"    data-f="type2"   onclick="setFilter(this,'type2')">🔌 Type 2</button>
+    <button class="chip"    data-f="chademo" onclick="setFilter(this,'chademo')">CHAdeMO</button>
+    <button class="chip"    data-f="free24"  onclick="setFilter(this,'free24')">24/7</button>
+  </div>
+  <button class="cart-btn" id="cartBtn" onclick="toggleCart()" style="display:none">
+    🛒 Cart
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
 </header>
 
-<!-- Hero -->
-<div class="hero">
-  <h1>EV Accessories — <span>Verified & Delivered</span></h1>
-  <p>Every cable, adapter, and charger sold here is verified compatible with cars sold in Georgia. No counterfeits. No guesswork.</p>
-  <div class="hero-badges">
-    <span class="hero-badge">✅ Verified Sellers Only</span>
-    <span class="hero-badge">🇬🇪 Ships to All of Georgia</span>
-    <span class="hero-badge">🔌 Compatibility Guaranteed</span>
-    <span class="hero-badge">📦 Free Returns 30 Days</span>
+<!-- VIEWS -->
+<!-- MAP VIEW -->
+<div class="view active" id="viewMap">
+  <canvas id="mapCanvas"></canvas>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-pill"><div class="stat-dot green"></div><span id="freeCount">0</span> Free</div>
+    <div class="stat-pill"><div class="stat-dot orange"></div><span id="busyCount">0</span> Busy</div>
+    <div class="stat-pill"><div class="stat-dot red"></div><span id="brokenCount">0</span> Offline</div>
+    <div class="stat-pill">📍 Tbilisi</div>
+  </div>
+  <div class="zoom-ctrl">
+    <button class="zoom-btn" onclick="zoom(1.2)">+</button>
+    <button class="zoom-btn" onclick="zoom(.83)">−</button>
+  </div>
+  <button class="list-toggle-btn" onclick="toggleList()">☰ Stations</button>
+  <button class="my-loc-btn" onclick="centerMe()">📍</button>
+  <div class="side-panel" id="sidePanel">
+    <div class="sp-header">
+      <div class="sp-title">Nearby Stations</div>
+      <button class="sp-close" onclick="toggleList()">✕</button>
+    </div>
+    <div class="station-list" id="stationList"></div>
+  </div>
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-handle"></div>
+    <div class="dp-inner" id="detailInner"></div>
+  </div>
+  <div class="route-bar" id="routeBar">
+    <div class="rs"><div class="rs-val" id="rEta">8 min</div><div class="rs-label">ETA</div></div>
+    <div class="rs-div"></div>
+    <div class="rs"><div class="rs-val" id="rDist">2.4 km</div><div class="rs-label">Distance</div></div>
+    <div class="rs-div"></div>
+    <div class="rs"><div class="rs-val" id="rBat">18%</div><div class="rs-label">Arrives at</div></div>
+    <button class="rs-cancel" onclick="cancelRoute()">✕ Cancel</button>
   </div>
 </div>
 
-<!-- Main Layout -->
-<div class="layout">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="filter-section">
-      <div class="filter-title">Category</div>
-      <label class="filter-item active-cat" id="cat-all">
-        <input type="radio" name="cat" value="all" checked onchange="filterProducts()"> All Products
-      </label>
-      <label class="filter-item" id="cat-cables">
-        <input type="radio" name="cat" value="cables" onchange="filterProducts()"> 🔌 Cables & Adapters
-      </label>
-      <label class="filter-item" id="cat-chargers">
-        <input type="radio" name="cat" value="chargers" onchange="filterProducts()"> ⚡ Home Chargers
-      </label>
-      <label class="filter-item" id="cat-tools">
-        <input type="radio" name="cat" value="tools" onchange="filterProducts()"> 🔧 Tools & Monitors
-      </label>
-      <label class="filter-item" id="cat-protection">
-        <input type="radio" name="cat" value="protection" onchange="filterProducts()"> 🛡️ Protection
-      </label>
+<!-- SHOP VIEW -->
+<div class="view" id="viewShop">
+  <div class="proto-banner">🧪 <strong>Prototype</strong> — Design Sprint validation · No real purchases</div>
+  <div class="shop-hero">
+    <h1>EV Accessories — <span>Verified & Delivered</span></h1>
+    <p>Every product verified compatible with cars available in Georgia. No counterfeits.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">✅ Verified Sellers</span>
+      <span class="hero-badge">🇬🇪 Ships to Georgia</span>
+      <span class="hero-badge">🔌 Compatibility Guaranteed</span>
+      <span class="hero-badge">📦 Free Returns 30d</span>
     </div>
-
-    <div class="filter-section">
-      <div class="filter-title">Max Price (₾)</div>
-      <div class="price-range">
+  </div>
+  <div class="shop-layout">
+    <aside class="shop-sidebar">
+      <div class="filter-card">
+        <div class="filter-title">Category</div>
+        <label class="filter-item"><input type="radio" name="cat" value="all" checked onchange="filterShop()"> All Products</label>
+        <label class="filter-item"><input type="radio" name="cat" value="cables" onchange="filterShop()"> 🔌 Cables</label>
+        <label class="filter-item"><input type="radio" name="cat" value="chargers" onchange="filterShop()"> ⚡ Chargers</label>
+        <label class="filter-item"><input type="radio" name="cat" value="tools" onchange="filterShop()"> 🔧 Tools</label>
+        <label class="filter-item"><input type="radio" name="cat" value="protection" onchange="filterShop()"> 🛡️ Protection</label>
+      </div>
+      <div class="filter-card">
+        <div class="filter-title">Max Price (₾)</div>
         <input type="range" class="range-slider" min="0" max="2000" value="2000" id="priceSlider" oninput="updatePrice(this)">
         <div class="range-labels"><span>₾0</span><span id="priceVal">₾2000</span></div>
       </div>
-    </div>
-
-    <div class="filter-section">
-      <div class="filter-title">Compatibility</div>
-      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> Nissan Leaf</label>
-      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> VW ID.4</label>
-      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> Tesla</label>
-      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> BYD</label>
-      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> Hyundai Ioniq</label>
-    </div>
-
-    <div class="filter-section">
-      <div class="filter-title">Seller</div>
-      <label class="filter-item"><input type="checkbox" checked onchange="filterProducts()"> ✅ Verified Only</label>
-    </div>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="main">
-    <div class="toolbar">
-      <div class="result-count" id="resultCount">Showing <strong>12</strong> products</div>
-      <select class="sort-select" onchange="filterProducts()" id="sortSelect">
-        <option value="popular">Sort: Most Popular</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-        <option value="newest">Newest First</option>
-      </select>
-    </div>
-
-    <div class="product-grid" id="productGrid"></div>
-  </main>
+    </aside>
+    <main class="shop-main">
+      <div class="shop-toolbar">
+        <div class="result-count" id="resultCount">Showing <strong>12</strong> products</div>
+        <select class="sort-sel" id="sortSel" onchange="filterShop()">
+          <option value="popular">Most Popular</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="newest">Newest</option>
+        </select>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </main>
+  </div>
 </div>
 
-<!-- Cart Drawer -->
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" id="bnav-map" onclick="switchView('map')">
+    <span class="bnav-ico">🗺</span>Charger Map
+  </button>
+  <button class="bnav-btn" id="bnav-shop" onclick="switchView('shop')">
+    <span class="bnav-ico">🛒</span>Shop
+  </button>
+</nav>
+
+<!-- CART DRAWER -->
 <div class="overlay" id="overlay" onclick="toggleCart()"></div>
 <div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <div class="drawer-title">🛒 Your Cart</div>
-    <button class="close-btn" onclick="toggleCart()">✕</button>
+  <div class="drawer-hdr">
+    <div class="drawer-title">🛒 Cart</div>
+    <button class="d-close" onclick="toggleCart()">✕</button>
   </div>
   <div class="drawer-items" id="drawerItems"></div>
-  <div class="drawer-footer" id="drawerFooter"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
 </div>
 
-<!-- Product Modal -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOut(event)">
   <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-// ── DATA ─────────────────────────────────────────────────────────────────────
-const PRODUCTS = [
-  { id:1,  cat:'cables',    ico:'🔌', name:'Type 2 Charging Cable 32A',       price:189,  old:null, stars:4.8, reviews:134, badge:'popular', compat:'VW ID.4 · BMW · Hyundai Ioniq', desc:'High-current 32A Type 2 cable for Mode 3 AC charging. 5-metre length, IP55 waterproof. Ships with Georgian plug adapter.' },
-  { id:2,  cat:'cables',    ico:'🔄', name:'CHAdeMO to CCS Adapter',           price:290,  old:360,  stars:4.5, reviews:67,  badge:'sale',    compat:'Nissan Leaf · Mitsubishi Outlander PHEV', desc:'Allows CHAdeMO vehicles to use CCS2 fast chargers — essential for Georgian highway routes where CHAdeMO stations are scarce.' },
-  { id:3,  cat:'cables',    ico:'⚡', name:'J1772 to Type 2 Adapter',          price:95,   old:null, stars:4.7, reviews:89,  badge:'new',     compat:'US-import EVs (Chevy Bolt · Bolt EUV)', desc:'For US-auction imports. Converts J1772 inlet to European Type 2 — works with all Georgian public chargers.' },
-  { id:4,  cat:'chargers',  ico:'🏠', name:'11kW Home Wallbox Charger',        price:1290, old:null, stars:4.9, reviews:201, badge:'popular', compat:'Universal — all Type 2 vehicles', desc:'Smart home charger with Wi-Fi, app control, and scheduled charging. Installation guide included in Georgian.' },
-  { id:5,  cat:'chargers',  ico:'🔋', name:'3.7kW Portable EVSE',              price:340,  old:420,  stars:4.4, reviews:55,  badge:'sale',    compat:'Universal — all Type 2 vehicles', desc:'Take charging anywhere. Includes Schuko, Type 2, and CEE17 plugs. Perfect for intercity trips without fast chargers.' },
-  { id:6,  cat:'chargers',  ico:'☀️', name:'Solar Balcony Charger Kit',        price:980,  old:null, stars:4.3, reviews:28,  badge:'new',     compat:'All EVs with Type 2 port', desc:'300W balcony panel + MPPT controller + Type 2 cable. Charge slowly for free overnight. Great for apartment dwellers.' },
-  { id:7,  cat:'tools',     ico:'🔍', name:'OBD2 Battery Health Scanner',      price:145,  old:null, stars:4.6, reviews:112, badge:null,      compat:'Nissan Leaf · Renault Zoe · BMW i3', desc:'Plug in, open app, read real SoH%. The exact tool to check a second-hand EV before buying. Works with Android & iOS.' },
-  { id:8,  cat:'tools',     ico:'📱', name:'Bluetooth Charge Monitor',         price:68,   old:null, stars:4.5, reviews:78,  badge:'popular', compat:'Universal — all EVs', desc:'Real-time charge current, voltage, and kWh display on your phone. Know exactly what you\'re paying per session.' },
-  { id:9,  cat:'tools',     ico:'🔦', name:'EV Safety Emergency Kit',          price:89,   old:null, stars:4.8, reviews:156, badge:null,      compat:'Universal', desc:'Reflective vest, warning triangle, gloves, and EV-specific fire blanket. Required for long intercity drives in Georgia.' },
-  { id:10, cat:'protection',ico:'🛡️', name:'Type 2 Port Dust Cap (2-pack)',    price:18,   old:null, stars:4.3, reviews:203, badge:null,      compat:'Universal — all Type 2 ports', desc:'Waterproof silicone caps protect your charge port from Tbilisi road dust and rain. Attach to keyring so you never lose them.' },
-  { id:11, cat:'protection',ico:'🧲', name:'Cable Lock & Tether Set',          price:54,   old:null, stars:4.7, reviews:91,  badge:'new',     compat:'Universal', desc:'4-digit cable lock prevents theft at public stations. Tether attaches cable to car so it\'s never left behind.' },
-  { id:12, cat:'cables',    ico:'🇰🇷', name:'CCS1 to CCS2 Adapter (Korean)',   price:220,  old:null, stars:4.4, reviews:44,  badge:'new',     compat:'Hyundai Ioniq 5 · Kia EV6 (KR spec)', desc:'Korean-spec CCS1 imports need this to use European CCS2 fast chargers. Rated for up to 150kW. Tested at Georgian Wissol DC stations.' },
-];
-
-let cart = {};
-
-// ── RENDER ───────────────────────────────────────────────────────────────────
-function renderProducts(products) {
-  const grid = document.getElementById('productGrid');
-  grid.innerHTML = '';
-  document.getElementById('resultCount').innerHTML = `Showing <strong>${products.length}</strong> products`;
-
-  if (products.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">No products match your filters 🤷</div>';
-    return;
-  }
-
-  products.forEach((p, i) => {
-    const stars = '★'.repeat(Math.floor(p.stars)) + (p.stars % 1 >= .5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(p.stars));
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.style.animationDelay = `${i * 0.04}s`;
-    card.innerHTML = `
-      <div class="card-img" style="background:${colorForCat(p.cat)}">
-        ${p.badge ? `<div class="card-badge ${p.badge}">${p.badge.toUpperCase()}</div>` : ''}
-        <div class="verified-badge">✅ Verified</div>
-        ${p.ico}
-      </div>
-      <div class="card-body">
-        <div class="card-cat">${catLabel(p.cat)}</div>
-        <div class="card-name">${p.name}</div>
-        <div class="stars">${stars} <span>(${p.reviews})</span></div>
-        <div class="card-compat">🚗 ${p.compat}</div>
-        <div class="card-footer">
-          <div class="card-price">
-            ${p.old ? `<span class="old-price">₾${p.old}</span>` : ''}
-            ₾${p.price}
-          </div>
-          <button class="add-btn" id="btn-${p.id}" onclick="addToCart(event, ${p.id})">+ Add</button>
-        </div>
-      </div>
-    `;
-    card.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('add-btn')) openModal(p);
-    });
-    grid.appendChild(card);
-  });
-}
-
-function colorForCat(cat) {
-  return {cables:'#EEF9F7',chargers:'#EFF6FF',tools:'#FFF8EC',protection:'#F0EEFF'}[cat] || '#F4F6F8';
-}
-
-function catLabel(cat) {
-  return {cables:'Cables & Adapters',chargers:'Home Chargers',tools:'Tools & Monitors',protection:'Protection'}[cat] || cat;
-}
-
-// ── FILTER ───────────────────────────────────────────────────────────────────
-function filterProducts() {
-  const q     = document.getElementById('searchInput').value.toLowerCase();
-  const cat   = document.querySelector('input[name=cat]:checked').value;
-  const max   = parseInt(document.getElementById('priceSlider').value);
-  const sort  = document.getElementById('sortSelect').value;
-
-  let list = PRODUCTS.filter(p => {
-    if (cat !== 'all' && p.cat !== cat) return false;
-    if (p.price > max) return false;
-    if (q && !p.name.toLowerCase().includes(q) && !p.compat.toLowerCase().includes(q)) return false;
-    return true;
-  });
-
-  if (sort === 'price-asc')  list.sort((a,b) => a.price - b.price);
-  if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
-  if (sort === 'newest')     list.sort((a,b) => b.id - a.id);
-  if (sort === 'popular')    list.sort((a,b) => b.reviews - a.reviews);
-
-  renderProducts(list);
-}
-
-function updatePrice(el) {
-  document.getElementById('priceVal').textContent = '₾' + el.value;
-  filterProducts();
-}
-
-// ── CART ─────────────────────────────────────────────────────────────────────
-function addToCart(e, id) {
-  e.stopPropagation();
-  cart[id] = (cart[id] || 0) + 1;
-  updateCartUI();
-  const btn = document.getElementById('btn-' + id);
-  if (btn) {
-    btn.textContent = '✓ Added'; btn.classList.add('added');
-    setTimeout(() => { btn.textContent = '+ Add'; btn.classList.remove('added'); }, 1200);
-  }
-  const p = PRODUCTS.find(x => x.id === id);
-  showToast(`${p.ico} ${p.name} added to cart`);
-}
-
-function changeQty(id, delta) {
-  cart[id] = (cart[id] || 0) + delta;
-  if (cart[id] <= 0) delete cart[id];
-  updateCartUI();
-  renderCartDrawer();
-}
-
-function removeItem(id) {
-  delete cart[id];
-  updateCartUI();
-  renderCartDrawer();
-}
-
-function updateCartUI() {
-  const total = Object.values(cart).reduce((s,v) => s+v, 0);
-  const badge = document.getElementById('cartBadge');
-  badge.textContent = total;
-  badge.style.display = total > 0 ? 'flex' : 'none';
-  badge.classList.add('pop');
-  setTimeout(() => badge.classList.remove('pop'), 200);
-}
-
-function renderCartDrawer() {
-  const el = document.getElementById('drawerItems');
-  const footer = document.getElementById('drawerFooter');
-  const ids = Object.keys(cart);
-
-  if (ids.length === 0) {
-    el.innerHTML = `<div class="empty-cart"><div class="ico">🛒</div><div>Your cart is empty</div><div style="font-size:.82rem;margin-top:.4rem;">Browse accessories above</div></div>`;
-    footer.innerHTML = '';
-    return;
-  }
-
-  el.innerHTML = ids.map(id => {
-    const p = PRODUCTS.find(x => x.id == id);
-    return `<div class="cart-item">
-      <div class="cart-item-ico">${p.ico}</div>
-      <div class="cart-item-info">
-        <div class="cart-item-name">${p.name}</div>
-        <div class="cart-item-price">₾${p.price}</div>
-        <div class="qty-ctrl">
-          <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
-          <span class="qty-val">${cart[id]}</span>
-          <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
-        </div>
-      </div>
-      <button class="remove-btn" onclick="removeItem(${p.id})">🗑</button>
-    </div>`;
-  }).join('');
-
-  const subtotal = ids.reduce((s, id) => s + PRODUCTS.find(x => x.id==id).price * cart[id], 0);
-  footer.innerHTML = `
-    <div class="cart-total">
-      <span class="cart-total-label">Subtotal</span>
-      <span class="cart-total-val">₾${subtotal}</span>
-    </div>
-    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout →</button>
-    <div class="checkout-note">🇬🇪 Free delivery to Tbilisi on orders over ₾200</div>
-  `;
-}
-
-function toggleCart() {
-  const drawer = document.getElementById('drawer');
-  const overlay = document.getElementById('overlay');
-  const open = drawer.classList.toggle('open');
-  overlay.classList.toggle('show', open);
-  if (open) renderCartDrawer();
-}
-
-// ── CHECKOUT FLOW ──────────────────────────────────────────────────────────
-let coStep = 1; // 1=delivery, 2=payment, 3=confirm
-let coDelivery = 'standard';
-let coPayMethod = 'card';
-let coOrderNum = '';
-
-const CO_STEPS = [
-  { n: 1, label: 'Delivery'  },
-  { n: 2, label: 'Payment'   },
-  { n: 3, label: 'Confirm'   },
-];
-
-function checkout() {
-  if (Object.keys(cart).length === 0) return;
-  toggleCart();
-  coStep = 1;
-  coOrderNum = 'EVB-' + Math.floor(10000 + Math.random() * 90000);
-  document.getElementById('coOverlay').classList.add('show');
-  renderCheckout();
-}
-
-function closeCheckout() {
-  document.getElementById('coOverlay').classList.remove('show');
-}
-
-function cartSubtotal() {
-  return Object.keys(cart).reduce((s, id) => s + PRODUCTS.find(x => x.id == id).price * cart[id], 0);
-}
-
-function deliveryCost() {
-  const sub = cartSubtotal();
-  if (coDelivery === 'standard') return sub >= 200 ? 0 : 15;
-  if (coDelivery === 'express')  return 35;
-  if (coDelivery === 'pickup')   return 0;
-  return 0;
-}
-
-function renderCheckout() {
-  renderCoSteps();
-  renderCoAside();
-  const step = coStep;
-  if (step === 1) renderDeliveryStep();
-  else if (step === 2) renderPaymentStep();
-  else renderConfirmStep();
-}
-
-function renderCoSteps() {
-  const el = document.getElementById('coSteps');
-  el.innerHTML = CO_STEPS.map((s, i) => {
-    const cls = coStep > s.n ? 'done' : coStep === s.n ? 'active' : '';
-    const ico = coStep > s.n ? '✓' : s.n;
-    const sep = i < CO_STEPS.length - 1
-      ? `<div class="co-step-sep ${coStep > s.n ? 'done' : ''}"></div>`
-      : '';
-    return `<div class="co-step ${cls}">
-      <div class="co-step-num">${ico}</div>
-      <span>${s.label}</span>
-    </div>${sep}`;
-  }).join('');
-
-  const titles = ['', 'Delivery Details', 'Payment', 'Order Confirmed!'];
-  document.getElementById('coTitle').textContent = titles[coStep];
-}
-
-function renderCoAside() {
-  const ids = Object.keys(cart);
-  const sub  = cartSubtotal();
-  const del  = deliveryCost();
-  const total = sub + del;
-  document.getElementById('coAside').innerHTML = `
-    <div class="co-aside-title">Order Summary</div>
-    ${ids.map(id => {
-      const p = PRODUCTS.find(x => x.id == id);
-      const qty = cart[id];
-      return `<div class="co-aside-item">
-        <div class="co-aside-ico">${p.ico}</div>
-        <div class="co-aside-name">${p.name}${qty > 1 ? ` ×${qty}` : ''}</div>
-        <div class="co-aside-price">₾${p.price * qty}</div>
-      </div>`;
-    }).join('')}
-    <div class="co-aside-totals">
-      <div class="co-aside-line"><span>Subtotal</span><span>₾${sub}</span></div>
-      <div class="co-aside-line"><span>Delivery</span><span>${del === 0 ? '<span style="color:var(--green)">Free</span>' : '₾' + del}</span></div>
-      <div class="co-aside-line total"><span>Total</span><span>₾${total}</span></div>
-    </div>
-  `;
-}
-
-// ── STEP 1: DELIVERY ─────────────────────────────────────────────────────────
-function renderDeliveryStep() {
-  document.getElementById('coMain').innerHTML = `
-    <div class="co-section-title">Delivery Method</div>
-    <div class="co-options" id="coDeliveryOpts">
-      ${[
-        { val:'standard', ico:'📦', label:'Standard Delivery', sub:'2–4 business days · Tbilisi & regions', price: cartSubtotal()>=200?'Free':'₾15' },
-        { val:'express',  ico:'⚡', label:'Express Delivery',  sub:'Next business day · Tbilisi only',       price:'₾35' },
-        { val:'pickup',   ico:'🏪', label:'Pickup at Partner Hub', sub:'Wissol Vake or Tegeta Isani · Ready in 2h', price:'Free' },
-      ].map(o => `
-        <label class="co-option ${coDelivery===o.val?'selected':''}" onclick="selectDelivery('${o.val}')">
-          <input type="radio" name="delivery" value="${o.val}" ${coDelivery===o.val?'checked':''}>
-          <span style="font-size:1.4rem">${o.ico}</span>
-          <div>
-            <div class="co-option-label">${o.label}</div>
-            <div class="co-option-sub">${o.sub}</div>
-          </div>
-          <span class="co-option-price">${o.price}</span>
-        </label>`).join('')}
-    </div>
-
-    <div class="co-section-title" style="margin-top:1.25rem">Contact & Address</div>
-    <div class="co-row">
-      <div class="co-field">
-        <label class="co-label">First Name <span>*</span></label>
-        <input class="co-input" id="co_fname" placeholder="Giorgi" value="">
-        <div class="co-err-msg">Required</div>
-      </div>
-      <div class="co-field">
-        <label class="co-label">Last Name <span>*</span></label>
-        <input class="co-input" id="co_lname" placeholder="Beridze" value="">
-        <div class="co-err-msg">Required</div>
-      </div>
-    </div>
-    <div class="co-row">
-      <div class="co-field">
-        <label class="co-label">Phone <span>*</span></label>
-        <input class="co-input" id="co_phone" placeholder="+995 555 00 00 00" type="tel">
-        <div class="co-err-msg">Required</div>
-      </div>
-      <div class="co-field">
-        <label class="co-label">Email</label>
-        <input class="co-input" id="co_email" placeholder="giorgi@example.com" type="email">
-      </div>
-    </div>
-    <div id="coAddressBlock">
-      <div class="co-row single">
-        <div class="co-field">
-          <label class="co-label">Street Address <span>*</span></label>
-          <input class="co-input" id="co_addr" placeholder="Rustaveli Ave 23, Apt 5">
-          <div class="co-err-msg">Required</div>
-        </div>
-      </div>
-      <div class="co-row triple">
-        <div class="co-field">
-          <label class="co-label">City <span>*</span></label>
-          <select class="co-select" id="co_city">
-            <option>Tbilisi</option><option>Batumi</option><option>Kutaisi</option>
-            <option>Rustavi</option><option>Gori</option><option>Other</option>
-          </select>
-        </div>
-        <div class="co-field">
-          <label class="co-label">District</label>
-          <input class="co-input" id="co_district" placeholder="Vake">
-        </div>
-        <div class="co-field">
-          <label class="co-label">Postal Code</label>
-          <input class="co-input" id="co_zip" placeholder="0179">
-        </div>
-      </div>
-    </div>
-    <div class="co-field" style="margin-top:.75rem">
-      <label class="co-label">Delivery Note</label>
-      <input class="co-input" id="co_note" placeholder="Leave at door, ring twice, etc.">
-    </div>
-  `;
-
-  document.getElementById('coFooter').innerHTML = `
-    <span style="font-size:.82rem;color:var(--muted)">🔒 Secure checkout</span>
-    <button class="co-next-btn" onclick="deliveryNext()">Continue to Payment →</button>
-  `;
-
-  // hide address if pickup
-  updateAddressVisibility();
-}
-
-function selectDelivery(val) {
-  coDelivery = val;
-  document.querySelectorAll('.co-option').forEach(el => {
-    el.classList.toggle('selected', el.querySelector('input').value === val);
-  });
-  updateAddressVisibility();
-  renderCoAside(); // update delivery cost live
-}
-
-function updateAddressVisibility() {
-  const ab = document.getElementById('coAddressBlock');
-  if (ab) ab.style.display = coDelivery === 'pickup' ? 'none' : 'block';
-}
-
-function deliveryNext() {
-  let valid = true;
-  ['co_fname','co_lname','co_phone'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el || !el.value.trim()) { el && el.classList.add('err'); valid = false; }
-    else el.classList.remove('err');
-  });
-  if (coDelivery !== 'pickup') {
-    const addr = document.getElementById('co_addr');
-    if (!addr.value.trim()) { addr.classList.add('err'); valid = false; }
-    else addr.classList.remove('err');
-  }
-  if (!valid) { showToast('⚠️ Please fill in the required fields'); return; }
-  coStep = 2;
-  renderCheckout();
-}
-
-// ── STEP 2: PAYMENT ──────────────────────────────────────────────────────────
-function renderPaymentStep() {
-  const total = cartSubtotal() + deliveryCost();
-  document.getElementById('coMain').innerHTML = `
-    <div class="co-section-title">Payment Method</div>
-    <div class="co-card-row">
-      ${[
-        { val:'card',   label:'💳 Card' },
-        { val:'bank',   label:'🏦 Bank Transfer' },
-        { val:'cash',   label:'💵 Cash on Delivery' },
-      ].map(m => `<button class="co-pay-tab ${coPayMethod===m.val?'sel':''}" onclick="selectPayMethod('${m.val}')">${m.label}</button>`).join('')}
-    </div>
-
-    <div id="coPayFields"></div>
-
-    <div style="background:var(--teal-lt);border-radius:10px;padding:1rem;margin-top:1.25rem;font-size:.88rem;color:var(--teal-dk);">
-      <strong>Total to pay: ₾${total}</strong><br>
-      <span style="color:var(--muted)">All prices include Georgian VAT (18%)</span>
-    </div>
-
-    <div style="margin-top:1.25rem;padding:1rem;background:var(--bg);border-radius:10px;font-size:.82rem;color:var(--muted);line-height:1.6">
-      🔒 Prototype note: no real payment is processed. This flow demonstrates the UX only.
-    </div>
-  `;
-  renderPayFields();
-
-  document.getElementById('coFooter').innerHTML = `
-    <button class="co-back-btn" onclick="coStep=1;renderCheckout()">← Back</button>
-    <button class="co-next-btn" onclick="paymentNext()">Place Order →</button>
-  `;
-}
-
-function selectPayMethod(val) {
-  coPayMethod = val;
-  document.querySelectorAll('.co-pay-tab').forEach(el => {
-    el.classList.toggle('sel', el.textContent.includes(val==='card'?'Card':val==='bank'?'Bank':'Cash'));
-  });
-  renderPayFields();
-}
-
-function renderPayFields() {
-  const el = document.getElementById('coPayFields');
-  if (!el) return;
-  if (coPayMethod === 'card') {
-    el.innerHTML = `
-      <div class="co-row single" style="margin-top:1rem">
-        <div class="co-field">
-          <label class="co-label">Cardholder Name <span>*</span></label>
-          <input class="co-input" id="co_cname" placeholder="GIORGI BERIDZE">
-        </div>
-      </div>
-      <div class="co-row single">
-        <div class="co-field">
-          <label class="co-label">Card Number <span>*</span></label>
-          <input class="co-input" id="co_cnum" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCard(this)">
-        </div>
-      </div>
-      <div class="co-row">
-        <div class="co-field">
-          <label class="co-label">Expiry <span>*</span></label>
-          <input class="co-input" id="co_exp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
-        </div>
-        <div class="co-field">
-          <label class="co-label">CVV <span>*</span></label>
-          <input class="co-input" id="co_cvv" placeholder="123" maxlength="4" type="password">
-        </div>
-      </div>`;
-  } else if (coPayMethod === 'bank') {
-    el.innerHTML = `
-      <div style="margin-top:1rem;padding:1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;line-height:1.8">
-        <div><strong>Bank:</strong> TBC Bank Georgia</div>
-        <div><strong>Account:</strong> GE29TB7194336080100003</div>
-        <div><strong>Reference:</strong> ${coOrderNum}</div>
-        <div style="color:var(--muted);font-size:.8rem;margin-top:.5rem">Transfer within 24h to confirm order. You'll receive a confirmation email.</div>
-      </div>`;
-  } else {
-    el.innerHTML = `
-      <div style="margin-top:1rem;padding:1rem;background:var(--bg);border-radius:10px;font-size:.88rem;color:var(--muted);line-height:1.6">
-        💵 Pay the courier in cash when your order arrives. Available for Tbilisi deliveries only.
-      </div>`;
-  }
-}
-
-function formatCard(el) {
-  let v = el.value.replace(/\D/g,'').substring(0,16);
-  el.value = v.replace(/(.{4})/g,'$1 ').trim();
-}
-function formatExpiry(el) {
-  let v = el.value.replace(/\D/g,'').substring(0,4);
-  if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
-  el.value = v;
-}
-
-function paymentNext() {
-  if (coPayMethod === 'card') {
-    const cnum = document.getElementById('co_cnum');
-    const exp  = document.getElementById('co_exp');
-    const cvv  = document.getElementById('co_cvv');
-    let valid = true;
-    if (!cnum || cnum.value.replace(/\s/g,'').length < 16) { cnum && cnum.classList.add('err'); valid = false; } else cnum.classList.remove('err');
-    if (!exp  || exp.value.length < 7)  { exp && exp.classList.add('err');  valid = false; } else exp.classList.remove('err');
-    if (!cvv  || cvv.value.length < 3)  { cvv && cvv.classList.add('err');  valid = false; } else cvv.classList.remove('err');
-    if (!valid) { showToast('⚠️ Please complete card details'); return; }
-  }
-  // simulate processing
-  const btn = document.querySelector('.co-next-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
-  setTimeout(() => {
-    coStep = 3;
-    cart = {};
-    updateCartUI();
-    renderCheckout();
-  }, 1400);
-}
-
-// ── STEP 3: CONFIRMATION ─────────────────────────────────────────────────────
-function renderConfirmStep() {
-  document.getElementById('coSteps').innerHTML = ''; // hide steps on confirm
-  document.getElementById('coAside').style.display = 'none';
-  document.getElementById('coFooter').innerHTML = '';
-
-  document.getElementById('coMain').innerHTML = `
-    <div class="co-confirm">
-      <div class="co-confirm-icon">🎉</div>
-      <h2>Order Placed!</h2>
-      <p>Thank you! Your EV accessories are on the way. You'll receive an SMS confirmation shortly.</p>
-      <div class="co-confirm-order">
-        <div class="co-confirm-row"><span>Order Number</span><strong>${coOrderNum}</strong></div>
-        <div class="co-confirm-row"><span>Delivery</span><strong>${
-          coDelivery==='standard'?'Standard (2–4 days)':
-          coDelivery==='express' ?'Express (next day)':
-          'Hub Pickup (ready in 2h)'
-        }</strong></div>
-        <div class="co-confirm-row"><span>Payment</span><strong>${
-          coPayMethod==='card'?'Card ending ****':
-          coPayMethod==='bank'?'Bank Transfer':
-          'Cash on Delivery'
-        }</strong></div>
-        <div class="co-confirm-row bold"><span>Total Paid</span><span style="color:var(--teal)">Prototype — no charge</span></div>
-      </div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem">
-        🧪 This is a <strong>design sprint prototype</strong>. No real order was placed or payment taken.
-      </div>
-      <div class="co-confirm-actions">
-        <button class="co-action-btn co-action-primary" onclick="closeCheckout()">Continue Shopping</button>
-        <button class="co-action-btn co-action-secondary" onclick="closeCheckout();showToast('📦 Track order feature coming soon!')">Track Order</button>
-      </div>
-    </div>
-  `;
-}
-
-// ── MODAL ─────────────────────────────────────────────────────────────────────
-function openModal(p) {
-  const stars = '★'.repeat(Math.floor(p.stars)) + '☆'.repeat(5 - Math.floor(p.stars));
-  document.getElementById('modalContent').innerHTML = `
-    <button class="modal-close" onclick="closeModalDirect()">✕</button>
-    <div class="modal-ico">${p.ico}</div>
-    <div class="modal-cat">${catLabel(p.cat)}</div>
-    <div class="modal-name">${p.name}</div>
-    <div class="stars" style="font-size:.95rem">${stars} <span style="color:var(--muted);font-size:.85rem">${p.stars} · ${p.reviews} reviews</span></div>
-    <div class="modal-desc">${p.desc}</div>
-    <div class="modal-compat"><strong>✅ Compatible with:</strong> ${p.compat}</div>
-    ${p.badge === 'sale' && p.old ? `<div style="font-size:.82rem;color:var(--red);margin-bottom:.5rem">🔥 Sale — was ₾${p.old}</div>` : ''}
-    <div class="modal-footer">
-      <div class="modal-price">₾${p.price}</div>
-      <button class="modal-add-btn" onclick="addToCart(event,${p.id}); closeModalDirect()">+ Add to Cart</button>
-    </div>
-  `;
-  document.getElementById('modalOverlay').classList.add('show');
-}
-
-function closeModal(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
-}
-function closeModalDirect() {
-  document.getElementById('modalOverlay').classList.remove('show');
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
-}
-
-// ── NAV TABS (prototype stubs) ────────────────────────────────────────────────
-function switchTab(btn, tab) {
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  if (tab !== 'shop') {
-    showToast(`📍 "${btn.textContent.trim()}" module — open in full app`);
-  }
-}
-
-// ── INIT ─────────────────────────────────────────────────────────────────────
-document.getElementById('cartBadge').style.display = 'none';
-renderProducts(PRODUCTS);
-</script>
-
-<!-- ── CHECKOUT OVERLAY ── -->
+<!-- CHECKOUT -->
 <div class="co-overlay" id="coOverlay">
-  <div class="co-modal" id="coModal">
-    <div class="co-header">
+  <div class="co-modal">
+    <div class="co-hdr">
       <div class="co-title" id="coTitle">Checkout</div>
-      <button class="co-close" onclick="closeCheckout()">✕</button>
+      <button class="co-x" onclick="closeCheckout()">✕</button>
     </div>
     <div class="co-steps" id="coSteps"></div>
     <div class="co-body">
       <div class="co-main" id="coMain"></div>
       <aside class="co-aside" id="coAside"></aside>
     </div>
-    <div class="co-footer" id="coFooter"></div>
+    <div class="co-foot" id="coFoot"></div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// SHARED STATE
+// ══════════════════════════════════════════════════════════════════════════════
+let currentView = 'map';
+
+function switchView(v) {
+  currentView = v;
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('view' + v[0].toUpperCase() + v.slice(1)).classList.add('active');
+  document.getElementById('bnav-' + v).classList.add('active');
+
+  // topbar context swap
+  const chips   = document.getElementById('mapChips');
+  const cartBtn = document.getElementById('cartBtn');
+  const sb      = document.getElementById('searchBar');
+
+  if (v === 'map') {
+    chips.style.display   = 'flex';
+    cartBtn.style.display = 'none';
+    sb.placeholder = 'Search stations, areas…';
+  } else {
+    chips.style.display   = 'none';
+    cartBtn.style.display = 'flex';
+    sb.placeholder = 'Search accessories…';
+    filterShop();
+  }
+}
+
+function onSearch() {
+  if (currentView === 'map')  { renderStationList(); updateStats(); }
+  else                         filterShop();
+}
+
+let toastT;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MAP ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+const STATIONS = [
+  { id:1,  name:'Wissol Vake',         area:'Vake',        cx:.38,cy:.38, power:'22kW AC',  slots:[{t:'Type 2',s:'free'},{t:'Type 2',s:'free'},{t:'CCS2',s:'busy'}],  stars:4.7,reviews:312, hours:'24/7',  comment:'"Always reliable, clean bay, good lighting at night."',             price:'₾0.35/kWh', fast:false,chademo:false,free24:true,  type:['Type 2','CCS2'] },
+  { id:2,  name:'Tegeta Motors Hub',   area:'Isani',       cx:.72,cy:.55, power:'50kW DC',  slots:[{t:'CCS2',s:'busy'},{t:'CHAdeMO',s:'free'},{t:'CCS2',s:'busy'}],   stars:4.4,reviews:178, hours:'08–22', comment:'"Fast charger works great but gets busy."',                          price:'₾0.45/kWh', fast:true, chademo:true, free24:false, type:['CCS2','CHAdeMO'] },
+  { id:3,  name:'Galleria Tbilisi',    area:'Old Town',    cx:.62,cy:.44, power:'11kW AC',  slots:[{t:'Type 2',s:'free'},{t:'Type 2',s:'free'},{t:'Type 2',s:'free'}], stars:4.2,reviews:94,  hours:'10–22', comment:'"Shopping while charging — perfect combo."',                         price:'₾0.30/kWh', fast:false,chademo:false,free24:false, type:['Type 2'] },
+  { id:4,  name:'Freedom Square Hub',  area:'Old Town',    cx:.57,cy:.48, power:'50kW DC',  slots:[{t:'CCS2',s:'free'},{t:'Type 2',s:'busy'},{t:'Type 2',s:'broken'}], stars:3.9,reviews:67,  hours:'24/7',  comment:'"CCS fast charger is great. Unit 3 has been broken for weeks."',    price:'₾0.45/kWh', fast:true, chademo:false,free24:true,  type:['CCS2','Type 2'] },
+  { id:5,  name:'Saburtalo EV Point',  area:'Saburtalo',   cx:.42,cy:.30, power:'22kW AC',  slots:[{t:'Type 2',s:'free'},{t:'Type 2',s:'free'},{t:'CCS2',s:'free'}],  stars:4.8,reviews:204, hours:'24/7',  comment:'"Best station in Tbilisi — always free, fast and clean."',           price:'₾0.35/kWh', fast:false,chademo:false,free24:true,  type:['Type 2','CCS2'] },
+  { id:6,  name:'Gldani Plaza',        area:'Gldani',      cx:.60,cy:.18, power:'50kW DC',  slots:[{t:'CHAdeMO',s:'busy'},{t:'CCS2',s:'free'},{t:'CHAdeMO',s:'busy'}], stars:4.1,reviews:55,  hours:'09–21', comment:'"Useful for Leaf owners in north Tbilisi."',                         price:'₾0.45/kWh', fast:true, chademo:true, free24:false, type:['CHAdeMO','CCS2'] },
+  { id:7,  name:'Rustavi Highway Stop',area:'Isani Exit',  cx:.88,cy:.70, power:'100kW DC', slots:[{t:'CCS2',s:'free'},{t:'CCS2',s:'free'},{t:'CHAdeMO',s:'broken'}], stars:4.5,reviews:142, hours:'24/7',  comment:'"Essential for the Tbilisi–Rustavi route."',                         price:'₾0.50/kWh', fast:true, chademo:true, free24:true,  type:['CCS2','CHAdeMO'] },
+  { id:8,  name:'Mtatsminda Parking',  area:'Mtatsminda',  cx:.50,cy:.52, power:'7kW AC',   slots:[{t:'Type 2',s:'free'},{t:'Type 2',s:'busy'}],                      stars:3.8,reviews:41,  hours:'08–23', comment:'"Scenic spot but only 7kW — best for overnight visitors."',           price:'₾0.28/kWh', fast:false,chademo:false,free24:false, type:['Type 2'] },
+  { id:9,  name:'Didube Transit Hub',  area:'Didube',      cx:.33,cy:.42, power:'22kW AC',  slots:[{t:'Type 2',s:'busy'},{t:'CCS2',s:'free'},{t:'Type 2',s:'busy'}],  stars:4.0,reviews:87,  hours:'06–24', comment:'"Convenient near bus station. Gets busy at rush hour."',             price:'₾0.35/kWh', fast:false,chademo:false,free24:false, type:['Type 2','CCS2'] },
+  { id:10, name:'Vera Park Charger',   area:'Vera',        cx:.44,cy:.43, power:'22kW AC',  slots:[{t:'Type 2',s:'free'},{t:'Type 2',s:'free'},{t:'Type 2',s:'free'}], stars:4.6,reviews:118, hours:'24/7',  comment:'"Hidden gem — almost never crowded, super reliable."',               price:'₾0.35/kWh', fast:false,chademo:false,free24:true,  type:['Type 2'] },
+  { id:11, name:'Navtlughi Station',   area:'Isani',       cx:.68,cy:.60, power:'50kW DC',  slots:[{t:'CCS2',s:'broken'},{t:'CCS2',s:'free'}],                        stars:3.5,reviews:29,  hours:'24/7',  comment:'"One unit is broken. Report sent, no fix yet."',                    price:'₾0.45/kWh', fast:true, chademo:false,free24:true,  type:['CCS2'] },
+  { id:12, name:'Varketili Mall',      area:'Varketili',   cx:.78,cy:.72, power:'11kW AC',  slots:[{t:'Type 2',s:'free'},{t:'Type 2',s:'free'}],                      stars:4.3,reviews:63,  hours:'10–22', comment:'"New station, well maintained. Parking free with charge."',          price:'₾0.30/kWh', fast:false,chademo:false,free24:false, type:['Type 2'] },
+];
+
+const canvas = document.getElementById('mapCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, mapScale=1, offX=0, offY=0;
+let dragging=false, dStart={x:0,y:0}, dOff={x:0,y:0};
+let activeStation=null, mapFilter='all', routeTarget=null, animF=0;
+
+const ROADS = [
+  [[.20,.47],[.35,.46],[.50,.48],[.62,.47],[.72,.48],[.82,.50]],
+  [[.50,.28],[.50,.37],[.50,.48],[.50,.58],[.50,.65]],
+  [[.28,.35],[.35,.40],[.40,.46],[.42,.52],[.44,.58]],
+  [[.38,.20],[.40,.28],[.42,.35],[.42,.42],[.40,.50]],
+  [[.30,.30],[.35,.36],[.38,.42],[.38,.48],[.36,.55]],
+  [[.22,.38],[.28,.42],[.34,.46],[.40,.50],[.46,.54]],
+  [[.72,.48],[.78,.55],[.84,.62],[.88,.70]],
+  [[.50,.28],[.54,.22],[.58,.18],[.62,.16]],
+  [[.25,.30],[.35,.22],[.50,.18],[.65,.22],[.78,.32],[.84,.45],[.82,.62],[.72,.74],[.58,.80],[.42,.78],[.28,.68],[.22,.52],[.25,.38],[.25,.30]],
+  [[.50,.48],[.52,.52],[.54,.56],[.52,.62]],
+  [[.35,.46],[.35,.36],[.35,.28]],[[.60,.47],[.60,.38],[.60,.28]],
+  [[.45,.46],[.45,.38]],[[.55,.46],[.55,.38]],
+  [[.40,.50],[.40,.60],[.40,.68]],[[.62,.47],[.65,.55],[.68,.62]],
+];
+const RIVER = [[.15,.60],[.22,.56],[.30,.54],[.40,.53],[.50,.52],[.58,.54],[.66,.58],[.74,.62],[.82,.64],[.90,.66]];
+const PARKS = [{cx:.50,cy:.64,r:.04,label:'Rike Park'},{cx:.36,cy:.35,r:.025,label:'Vake Park'},{cx:.60,cy:.32,r:.02,label:'Mziuri'}];
+
+function w2s(nx,ny){ return [nx*W*mapScale+offX, ny*H*mapScale+offY]; }
+
+function drawMap() {
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0A1520'); bg.addColorStop(1,'#0D1B2A');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,.022)'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  PARKS.forEach(p=>{
+    const [px,py]=w2s(p.cx,p.cy), pr=p.r*W*mapScale;
+    ctx.beginPath();ctx.arc(px,py,pr,0,Math.PI*2);
+    ctx.fillStyle='rgba(52,199,123,.06)';ctx.fill();
+    ctx.strokeStyle='rgba(52,199,123,.14)';ctx.lineWidth=1;ctx.stroke();
+    if(mapScale>.8){ctx.font=`${Math.max(9,10*mapScale)}px DM Sans`;ctx.fillStyle='rgba(52,199,123,.5)';ctx.textAlign='center';ctx.fillText(p.label,px,py+pr+12);}
+  });
+  ctx.beginPath();
+  RIVER.forEach(([nx,ny],i)=>{ const[rx,ry]=w2s(nx,ny); i===0?ctx.moveTo(rx,ry):ctx.lineTo(rx,ry); });
+  ctx.strokeStyle='rgba(74,144,217,.22)';ctx.lineWidth=8*mapScale;ctx.lineCap='round';ctx.stroke();
+  ctx.strokeStyle='rgba(74,144,217,.1)';ctx.lineWidth=14*mapScale;ctx.stroke();
+  ROADS.forEach((road,ri)=>{
+    const isMain=ri<3;
+    ctx.beginPath();
+    road.forEach(([nx,ny],i)=>{ const[rx,ry]=w2s(nx,ny); i===0?ctx.moveTo(rx,ry):ctx.lineTo(rx,ry); });
+    ctx.strokeStyle=isMain?'rgba(255,255,255,.09)':'rgba(255,255,255,.048)';
+    ctx.lineWidth=isMain?(3*mapScale):(1.5*mapScale);
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+    if(isMain&&mapScale>.7){ctx.strokeStyle='rgba(42,181,160,.04)';ctx.lineWidth=8*mapScale;ctx.stroke();}
+  });
+  if(routeTarget) drawRoute(routeTarget);
+  filteredStations().forEach(st=>drawPin(st));
+  const[ux,uy]=w2s(.50,.46);
+  ctx.beginPath();ctx.arc(ux,uy,6*mapScale,0,Math.PI*2);ctx.fillStyle='#4A90D9';ctx.fill();
+  ctx.beginPath();ctx.arc(ux,uy,10*mapScale,0,Math.PI*2);ctx.strokeStyle='rgba(74,144,217,.4)';ctx.lineWidth=2*mapScale;ctx.stroke();
+  ctx.beginPath();ctx.arc(ux,uy,28*mapScale,0,Math.PI*2);ctx.strokeStyle='rgba(74,144,217,.1)';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='rgba(74,144,217,.04)';ctx.fill();
+}
+
+function drawPin(st) {
+  const[px,py]=w2s(st.cx,st.cy);
+  const isAct=activeStation&&activeStation.id===st.id;
+  const free=st.slots.filter(s=>s.s==='free').length;
+  const allBroken=st.slots.every(s=>s.s==='broken');
+  const col=allBroken?'#E05252':free>0?'#34C77B':'#F5A623';
+  if(free>0&&!allBroken){
+    const phase=((animF*.018)+st.id*.8)%1;
+    ctx.beginPath();ctx.arc(px,py,(14+phase*18)*mapScale,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(52,199,123,${(1-phase)*.32})`;ctx.lineWidth=2;ctx.stroke();
+  }
+  const g=ctx.createRadialGradient(px,py+2,0,px,py+2,20*mapScale);
+  g.addColorStop(0,'rgba(0,0,0,.4)');g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();ctx.arc(px,py+4*mapScale,12*mapScale,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  const r=isAct?15*mapScale:11*mapScale;
+  ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);
+  ctx.fillStyle=isAct?col:'#1E3045';ctx.fill();
+  ctx.strokeStyle=col;ctx.lineWidth=isAct?3*mapScale:2*mapScale;ctx.stroke();
+  ctx.font=`bold ${Math.max(8,(isAct?10:8)*mapScale)}px DM Mono`;
+  ctx.fillStyle=isAct?'#0D1B2A':col;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(st.fast?'⚡':st.power.split('k')[0]+'k',px,py);
+  if(isAct||mapScale>1.2){
+    const tw=ctx.measureText(st.name).width;
+    ctx.fillStyle='rgba(13,27,42,.88)';ctx.beginPath();
+    ctx.roundRect(px-tw/2-6,py+r+5,tw+12,20,4);ctx.fill();
+    ctx.font=`600 ${Math.max(9,11*mapScale)}px DM Sans`;
+    ctx.fillStyle=isAct?'#2AB5A0':'rgba(255,255,255,.82)';
+    ctx.textBaseline='top';ctx.fillText(st.name,px,py+r+7);
+  }
+}
+
+function drawRoute(st) {
+  const[ux,uy]=w2s(.50,.46),[tx,ty]=w2s(st.cx,st.cy);
+  const mx=(ux+tx)/2+(ty-uy)*.3, my=(uy+ty)/2-(tx-ux)*.3;
+  ctx.save();
+  ctx.setLineDash([8*mapScale,6*mapScale]);ctx.lineDashOffset=-(animF*.4%28);
+  ctx.beginPath();ctx.moveTo(ux,uy);ctx.quadraticCurveTo(mx,my,tx,ty);
+  ctx.strokeStyle='#2AB5A0';ctx.lineWidth=3*mapScale;ctx.lineCap='round';ctx.stroke();
+  ctx.setLineDash([]);ctx.lineDashOffset=0;ctx.globalAlpha=.14;ctx.lineWidth=12*mapScale;
+  ctx.beginPath();ctx.moveTo(ux,uy);ctx.quadraticCurveTo(mx,my,tx,ty);
+  ctx.strokeStyle='#2AB5A0';ctx.stroke();
+  ctx.restore();
+}
+
+function mapLoop(){ animF++; drawMap(); requestAnimationFrame(mapLoop); }
+
+function resizeMap(){
+  const el=document.getElementById('viewMap');
+  W=canvas.width=el.clientWidth; H=canvas.height=el.clientHeight; drawMap();
+}
+
+canvas.addEventListener('mousedown',e=>{ dragging=true; dStart={x:e.clientX,y:e.clientY}; dOff={x:offX,y:offY}; });
+canvas.addEventListener('mousemove',e=>{ if(!dragging)return; offX=dOff.x+(e.clientX-dStart.x); offY=dOff.y+(e.clientY-dStart.y); });
+canvas.addEventListener('mouseup',e=>{ const dx=Math.abs(e.clientX-dStart.x),dy=Math.abs(e.clientY-dStart.y); dragging=false; if(dx<5&&dy<5)handleMapClick(e.clientX,e.clientY); });
+canvas.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY<0?1.1:.91,mx=e.clientX,my=e.clientY; offX=mx-(mx-offX)*f; offY=my-(my-offY)*f; mapScale=Math.min(3,Math.max(.4,mapScale*f)); },{passive:false});
+canvas.addEventListener('touchstart',e=>{ const t=e.touches[0]; dragging=true; dStart={x:t.clientX,y:t.clientY}; dOff={x:offX,y:offY}; });
+canvas.addEventListener('touchmove',e=>{ e.preventDefault(); if(!dragging)return; const t=e.touches[0]; offX=dOff.x+(t.clientX-dStart.x); offY=dOff.y+(t.clientY-dStart.y); },{passive:false});
+canvas.addEventListener('touchend',()=>dragging=false);
+
+function handleMapClick(mx,my){
+  for(const st of STATIONS){
+    const[px,py]=w2s(st.cx,st.cy);
+    if(Math.hypot(mx-px,my-py)<20*mapScale){selectStation(st);return;}
+  }
+  closeDetail();
+}
+function zoom(f){ const cx=W/2,cy=H/2; offX=cx-(cx-offX)*f; offY=cy-(cy-offY)*f; mapScale=Math.min(3,Math.max(.4,mapScale*f)); }
+function centerMe(){ mapScale=1; offX=W/2-.50*W; offY=H/2-.46*H; showToast('📍 Centred on your location'); }
+
+function filteredStations(){
+  const q=document.getElementById('searchBar').value.toLowerCase();
+  return STATIONS.filter(st=>{
+    if(q&&!st.name.toLowerCase().includes(q)&&!st.area.toLowerCase().includes(q))return false;
+    if(mapFilter==='free')    return st.slots.some(s=>s.s==='free');
+    if(mapFilter==='fast')    return st.fast;
+    if(mapFilter==='type2')   return st.type.includes('Type 2');
+    if(mapFilter==='chademo') return st.chademo;
+    if(mapFilter==='free24')  return st.free24;
+    return true;
+  });
+}
+
+function setFilter(el,f){
+  mapFilter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.f===f));
+  renderStationList(); updateStats();
+}
+
+function updateStats(){
+  const v=filteredStations();
+  document.getElementById('freeCount').textContent  =v.filter(s=>s.slots.some(sl=>sl.s==='free')).length;
+  document.getElementById('busyCount').textContent  =v.filter(s=>s.slots.every(sl=>sl.s!=='free')&&s.slots.some(sl=>sl.s==='busy')).length;
+  document.getElementById('brokenCount').textContent=v.filter(s=>s.slots.every(sl=>sl.s==='broken')).length;
+}
+
+function toggleList(){ document.getElementById('sidePanel').classList.toggle('open'); renderStationList(); }
+
+function renderStationList(){
+  const el=document.getElementById('stationList');
+  el.innerHTML=filteredStations().map(st=>{
+    const free=st.slots.filter(s=>s.s==='free').length;
+    const allBroken=st.slots.every(s=>s.s==='broken');
+    const bc=allBroken?'rgba(224,82,82,.14)':free>0?'rgba(52,199,123,.14)':'rgba(245,166,35,.14)';
+    const tc=allBroken?'#E05252':free>0?'#34C77B':'#F5A623';
+    const lbl=allBroken?'Offline':free>0?`${free} free`:'Busy';
+    const act=activeStation&&activeStation.id===st.id;
+    return`<div class="srow ${act?'active':''}" onclick="selectStation(STATIONS.find(s=>s.id==${st.id}))">
+      <div class="srow-ico" style="background:${bc}">${st.fast?'⚡':'🔌'}</div>
+      <div class="srow-info"><div class="srow-name">${st.name}</div><div class="srow-sub">${st.area}·${st.power}·★${st.stars}</div></div>
+      <span class="srow-badge" style="background:${bc};color:${tc}">${lbl}</span>
+    </div>`;
+  }).join('');
+}
+
+function selectStation(st){
+  activeStation=st; renderDetail(st); renderStationList();
+  document.getElementById('detailPanel').classList.add('open');
+  offX+=(W/2-st.cx*W*mapScale-offX)*.6;
+  offY+=(H*.35-st.cy*H*mapScale-offY)*.6;
+}
+function closeDetail(){ activeStation=null; document.getElementById('detailPanel').classList.remove('open'); renderStationList(); }
+
+function renderDetail(st){
+  const free=st.slots.filter(s=>s.s==='free').length;
+  const wait=free>0?'~0 min':'~'+(8+Math.floor(Math.random()*15))+' min';
+  const dist=(0.4+Math.random()*2.5).toFixed(1);
+  document.getElementById('detailInner').innerHTML=`
+    <div class="dp-header">
+      <div><div class="dp-name">${st.name}</div><div class="dp-sub">📍 ${st.area} · ${st.hours} · ${st.price}</div></div>
+      <button class="dp-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dp-slots">${st.slots.map(sl=>`
+      <div class="dp-slot ${sl.s}">
+        <div class="dp-slot-ico">${sl.t==='CCS2'?'⚡':sl.t==='CHAdeMO'?'🔄':'🔌'}</div>
+        <div class="dp-slot-type">${sl.t}</div>
+        <div class="dp-slot-status">${sl.s==='free'?'Free':sl.s==='busy'?'In use':'Offline'}</div>
+      </div>`).join('')}</div>
+    <div class="dp-stats">
+      <div class="dp-stat"><div class="dp-stat-val">${free}/${st.slots.length}</div><div class="dp-stat-label">Available</div></div>
+      <div class="dp-stat"><div class="dp-stat-val">${wait}</div><div class="dp-stat-label">Wait</div></div>
+      <div class="dp-stat"><div class="dp-stat-val">${dist}km</div><div class="dp-stat-label">Distance</div></div>
+      <div class="dp-stat"><div class="dp-stat-val">${st.power}</div><div class="dp-stat-label">Power</div></div>
+    </div>
+    <div class="dp-stars"><span class="s">${'★'.repeat(Math.floor(st.stars))}${'☆'.repeat(5-Math.floor(st.stars))}</span><strong>${st.stars}</strong><span class="ct">(${st.reviews})</span></div>
+    <div class="dp-comment">${st.comment}</div>
+    <div class="dp-actions">
+      <button class="dp-btn dp-btn-primary"   onclick="startRoute(${st.id})">🧭 Navigate</button>
+      <button class="dp-btn dp-btn-secondary" onclick="bookSlot(${st.id})">📅 Book Slot</button>
+      <button class="dp-btn dp-btn-secondary" onclick="showToast('📸 Photos coming soon!')">📷 Photos</button>
+      <button class="dp-btn dp-btn-secondary" onclick="showToast('🔔 You will be notified!')">🔔 Notify</button>
+      <button class="dp-btn dp-btn-full"      onclick="showToast('⚠️ Report submitted — thanks!')">⚠️ Report an issue</button>
+    </div>`;
+}
+
+function startRoute(id){
+  const st=STATIONS.find(s=>s.id===id);
+  routeTarget=st;
+  const dist=(0.4+Math.random()*2.5).toFixed(1);
+  document.getElementById('rEta').textContent =Math.round(dist*3.5+2)+' min';
+  document.getElementById('rDist').textContent=dist+' km';
+  document.getElementById('rBat').textContent =Math.max(8,28-Math.round(dist*3))+'%';
+  document.getElementById('routeBar').classList.add('show');
+  showToast(`🧭 Route to ${st.name} started`);
+}
+function cancelRoute(){ routeTarget=null; document.getElementById('routeBar').classList.remove('show'); }
+function bookSlot(id){ showToast(`📅 Slot reserved at ${STATIONS.find(s=>s.id===id).name} for 30 min`); }
+
+setInterval(()=>{
+  const st=STATIONS[Math.floor(Math.random()*STATIONS.length)];
+  const slot=st.slots[Math.floor(Math.random()*st.slots.length)];
+  if(slot.s!=='broken'){ slot.s=slot.s==='free'?'busy':'free'; if(activeStation&&activeStation.id===st.id)renderDetail(st); updateStats(); renderStationList(); if(slot.s==='free')showToast(`🟢 ${st.name} — slot just freed up!`); }
+},8000);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SHOP ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+const PRODUCTS = [
+  {id:1, cat:'cables',    ico:'🔌', name:'Type 2 Cable 32A',          price:189, old:null, stars:4.8,reviews:134, badge:'popular', compat:'VW ID.4 · BMW · Ioniq',       desc:'High-current 32A Type 2 cable for Mode 3 AC. 5m, IP55 waterproof.'},
+  {id:2, cat:'cables',    ico:'🔄', name:'CHAdeMO → CCS2 Adapter',    price:290, old:360,  stars:4.5,reviews:67,  badge:'sale',    compat:'Nissan Leaf · Mitsubishi PHEV', desc:'Use CCS2 fast chargers with CHAdeMO vehicles — essential for Georgian highways.'},
+  {id:3, cat:'cables',    ico:'⚡', name:'J1772 → Type 2 Adapter',     price:95,  old:null, stars:4.7,reviews:89,  badge:'new',     compat:'US-import EVs (Bolt, Bolt EUV)',desc:'For US-auction imports. Converts J1772 to Type 2 — works with all Georgian chargers.'},
+  {id:4, cat:'chargers',  ico:'🏠', name:'11kW Home Wallbox',          price:1290,old:null, stars:4.9,reviews:201, badge:'popular', compat:'Universal — all Type 2',       desc:'Smart Wi-Fi wallbox with scheduled charging. Georgian installation guide included.'},
+  {id:5, cat:'chargers',  ico:'🔋', name:'3.7kW Portable EVSE',        price:340, old:420,  stars:4.4,reviews:55,  badge:'sale',    compat:'Universal — all Type 2',       desc:'Take charging anywhere. Schuko + Type 2 + CEE17 plugs included.'},
+  {id:6, cat:'chargers',  ico:'☀️', name:'Solar Balcony Kit 300W',     price:980, old:null, stars:4.3,reviews:28,  badge:'new',     compat:'All Type 2 EVs',               desc:'300W panel + MPPT + Type 2 cable. Charge overnight for free.'},
+  {id:7, cat:'tools',     ico:'🔍', name:'OBD2 Battery Scanner',       price:145, old:null, stars:4.6,reviews:112, badge:null,      compat:'Leaf · Zoe · BMW i3',          desc:'Read real SoH% before buying a used EV. Android & iOS.'},
+  {id:8, cat:'tools',     ico:'📱', name:'Bluetooth Charge Monitor',   price:68,  old:null, stars:4.5,reviews:78,  badge:'popular', compat:'Universal',                    desc:'Real-time current, voltage, and kWh on your phone.'},
+  {id:9, cat:'tools',     ico:'🔦', name:'EV Safety Kit',              price:89,  old:null, stars:4.8,reviews:156, badge:null,      compat:'Universal',                    desc:'Vest, triangle, gloves, EV fire blanket. Required for intercity drives.'},
+  {id:10,cat:'protection',ico:'🛡️', name:'Type 2 Dust Cap (2-pack)',   price:18,  old:null, stars:4.3,reviews:203, badge:null,      compat:'Universal Type 2 ports',       desc:'Silicone caps protect port from Tbilisi dust and rain.'},
+  {id:11,cat:'protection',ico:'🧲', name:'Cable Lock & Tether Set',    price:54,  old:null, stars:4.7,reviews:91,  badge:'new',     compat:'Universal',                    desc:'4-digit lock prevents theft at public stations.'},
+  {id:12,cat:'cables',    ico:'🇰🇷', name:'CCS1 → CCS2 Adapter',       price:220, old:null, stars:4.4,reviews:44,  badge:'new',     compat:'Ioniq 5 · EV6 (Korean spec)',  desc:'Korean-spec CCS1 to European CCS2. Tested at Wissol DC stations.'},
+];
+
+let cart = {};
+
+function catLabel(c){ return{cables:'Cables & Adapters',chargers:'Home Chargers',tools:'Tools & Monitors',protection:'Protection'}[c]||c; }
+function catColor(c){ return{cables:'#EEF9F7',chargers:'#EFF6FF',tools:'#FFF8EC',protection:'#F0EEFF'}[c]||'#F4F6F8'; }
+
+function filterShop(){
+  const q  =document.getElementById('searchBar').value.toLowerCase();
+  const cat=document.querySelector('input[name=cat]:checked')?.value||'all';
+  const max=parseInt(document.getElementById('priceSlider').value);
+  const srt=document.getElementById('sortSel').value;
+  let list=PRODUCTS.filter(p=>{
+    if(cat!=='all'&&p.cat!==cat)return false;
+    if(p.price>max)return false;
+    if(q&&!p.name.toLowerCase().includes(q)&&!p.compat.toLowerCase().includes(q))return false;
+    return true;
+  });
+  if(srt==='price-asc') list.sort((a,b)=>a.price-b.price);
+  if(srt==='price-desc')list.sort((a,b)=>b.price-a.price);
+  if(srt==='newest')    list.sort((a,b)=>b.id-a.id);
+  if(srt==='popular')   list.sort((a,b)=>b.reviews-a.reviews);
+  renderProducts(list);
+}
+
+function renderProducts(list){
+  document.getElementById('resultCount').innerHTML=`Showing <strong>${list.length}</strong> products`;
+  const g=document.getElementById('productGrid');
+  if(!list.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted-lt)">No products match 🤷</div>';return;}
+  g.innerHTML='';
+  list.forEach((p,i)=>{
+    const stars='★'.repeat(Math.floor(p.stars))+(p.stars%1>=.5?'½':'')+'☆'.repeat(5-Math.ceil(p.stars));
+    const d=document.createElement('div');
+    d.className='pcard'; d.style.animationDelay=`${i*.04}s`;
+    d.innerHTML=`
+      <div class="pcard-img" style="background:${catColor(p.cat)}">
+        ${p.badge?`<div class="pcard-badge ${p.badge}">${p.badge.toUpperCase()}</div>`:''}
+        <div class="verified-tag">✅ Verified</div>
+        ${p.ico}
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-cat">${catLabel(p.cat)}</div>
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-stars">${stars} <span>(${p.reviews})</span></div>
+        <div class="pcard-compat">🚗 ${p.compat}</div>
+        <div class="pcard-foot">
+          <div class="pcard-price">${p.old?`<span class="old">₾${p.old}</span>`:''} ₾${p.price}</div>
+          <button class="add-btn" id="ab${p.id}" onclick="addToCart(event,${p.id})">+ Add</button>
+        </div>
+      </div>`;
+    d.addEventListener('click',e=>{ if(!e.target.classList.contains('add-btn'))openModal(p); });
+    g.appendChild(d);
+  });
+}
+
+function updatePrice(el){ document.getElementById('priceVal').textContent='₾'+el.value; filterShop(); }
+
+function addToCart(e,id){
+  e.stopPropagation();
+  cart[id]=(cart[id]||0)+1;
+  updateCartBadge();
+  const btn=document.getElementById('ab'+id);
+  if(btn){btn.textContent='✓ Added';btn.classList.add('added');setTimeout(()=>{btn.textContent='+ Add';btn.classList.remove('added');},1200);}
+  showToast(`${PRODUCTS.find(x=>x.id===id).ico} Added to cart`);
+}
+
+function updateCartBadge(){
+  const total=Object.values(cart).reduce((s,v)=>s+v,0);
+  const badge=document.getElementById('cartBadge');
+  badge.textContent=total;
+  badge.style.display=total>0?'flex':'none';
+  badge.classList.add('pop'); setTimeout(()=>badge.classList.remove('pop'),200);
+}
+
+function toggleCart(){
+  const d=document.getElementById('drawer'),ov=document.getElementById('overlay');
+  const open=d.classList.toggle('open');
+  ov.classList.toggle('show',open);
+  if(open)renderDrawer();
+}
+
+function renderDrawer(){
+  const items=document.getElementById('drawerItems');
+  const foot=document.getElementById('drawerFoot');
+  const ids=Object.keys(cart);
+  if(!ids.length){items.innerHTML='<div class="empty-cart"><div class="ei">🛒</div>Your cart is empty</div>';foot.innerHTML='';return;}
+  items.innerHTML=ids.map(id=>{
+    const p=PRODUCTS.find(x=>x.id==id);
+    return`<div class="cart-item">
+      <div class="ci-ico">${p.ico}</div>
+      <div class="ci-info">
+        <div class="ci-name">${p.name}</div>
+        <div class="ci-price">₾${p.price}</div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
+          <span class="qty-val">${cart[id]}</span>
+          <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+        </div>
+      </div>
+      <button class="rm-btn" onclick="removeItem(${p.id})">🗑</button>
+    </div>`;
+  }).join('');
+  const sub=ids.reduce((s,id)=>s+PRODUCTS.find(x=>x.id==id).price*cart[id],0);
+  foot.innerHTML=`
+    <div class="cart-total-row"><span class="ct-label">Subtotal</span><span class="ct-val">₾${sub}</span></div>
+    <button class="checkout-btn" onclick="startCheckout()">Proceed to Checkout →</button>
+    <div class="checkout-note">🇬🇪 Free delivery to Tbilisi on orders over ₾200</div>`;
+}
+
+function changeQty(id,d){ cart[id]=(cart[id]||0)+d; if(cart[id]<=0)delete cart[id]; updateCartBadge(); renderDrawer(); }
+function removeItem(id){ delete cart[id]; updateCartBadge(); renderDrawer(); }
+
+function openModal(p){
+  const stars='★'.repeat(Math.floor(p.stars))+'☆'.repeat(5-Math.floor(p.stars));
+  document.getElementById('modalContent').innerHTML=`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-ico">${p.ico}</div>
+    <div class="modal-cat">${catLabel(p.cat)}</div>
+    <div class="modal-name">${p.name}</div>
+    <div style="color:var(--orange);margin-bottom:.5rem">${stars} <span style="color:var(--muted);font-size:.82rem">${p.stars} · ${p.reviews} reviews</span></div>
+    <div class="modal-desc">${p.desc}</div>
+    <div class="modal-compat">✅ Compatible: ${p.compat}</div>
+    ${p.badge==='sale'&&p.old?`<div style="font-size:.8rem;color:var(--red);margin-bottom:.5rem">🔥 Sale — was ₾${p.old}</div>`:''}
+    <div class="modal-foot">
+      <div class="modal-price">₾${p.price}</div>
+      <button class="modal-add" onclick="addToCart(event,${p.id});closeModal()">+ Add to Cart</button>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); }
+function closeModalOut(e){ if(e.target===document.getElementById('modalOverlay'))closeModal(); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CHECKOUT
+// ══════════════════════════════════════════════════════════════════════════════
+let coStep=1, coDelivery='standard', coPayMethod='card', coOrderNum='';
+
+function startCheckout(){
+  if(!Object.keys(cart).length)return;
+  toggleCart();
+  coStep=1; coOrderNum='EVB-'+Math.floor(10000+Math.random()*90000);
+  document.getElementById('coOverlay').classList.add('show');
+  renderCo();
+}
+function closeCheckout(){ document.getElementById('coOverlay').classList.remove('show'); }
+
+function cartSub(){ return Object.keys(cart).reduce((s,id)=>s+PRODUCTS.find(x=>x.id==id).price*cart[id],0); }
+function delCost(){ if(coDelivery==='standard')return cartSub()>=200?0:15; if(coDelivery==='express')return 35; return 0; }
+
+function renderCo(){
+  renderCoSteps(); renderCoAside();
+  if(coStep===1) renderDelivery();
+  else if(coStep===2) renderPayment();
+  else renderConfirm();
+}
+
+function renderCoSteps(){
+  const steps=[{n:1,l:'Delivery'},{n:2,l:'Payment'},{n:3,l:'Confirm'}];
+  document.getElementById('coSteps').innerHTML=steps.map((s,i)=>`
+    <div class="co-step ${coStep>s.n?'done':coStep===s.n?'active':''}">
+      <div class="co-step-n">${coStep>s.n?'✓':s.n}</div><span>${s.l}</span>
+    </div>${i<2?`<div class="co-sep ${coStep>s.n?'done':''}"></div>`:''}`).join('');
+  document.getElementById('coTitle').textContent=['','Delivery Details','Payment','Order Confirmed!'][coStep];
+}
+
+function renderCoAside(){
+  const ids=Object.keys(cart), sub=cartSub(), del=delCost();
+  document.getElementById('coAside').innerHTML=`
+    <div class="co-aside-title">Order Summary</div>
+    ${ids.map(id=>{const p=PRODUCTS.find(x=>x.id==id),q=cart[id];return`<div class="co-ai"><div class="co-ai-ico">${p.ico}</div><div class="co-ai-name">${p.name}${q>1?` ×${q}`:''}</div><div class="co-ai-price">₾${p.price*q}</div></div>`;}).join('')}
+    <div class="co-totals">
+      <div class="co-trow"><span>Subtotal</span><span>₾${sub}</span></div>
+      <div class="co-trow"><span>Delivery</span><span>${del===0?'<span style="color:var(--green)">Free</span>':'₾'+del}</span></div>
+      <div class="co-trow total"><span>Total</span><span>₾${sub+del}</span></div>
+    </div>`;
+}
+
+function renderDelivery(){
+  document.getElementById('coMain').innerHTML=`
+    <div class="co-sec-title">Delivery Method</div>
+    <div class="co-opts">
+      ${[{v:'standard',ico:'📦',l:'Standard Delivery',s:'2–4 days · All Georgia',p:cartSub()>=200?'Free':'₾15'},
+         {v:'express', ico:'⚡',l:'Express Delivery',  s:'Next day · Tbilisi only',p:'₾35'},
+         {v:'pickup',  ico:'🏪',l:'Hub Pickup',        s:'Wissol Vake or Tegeta · 2h',p:'Free'}].map(o=>`
+        <label class="co-opt ${coDelivery===o.v?'sel':''}" onclick="selDel('${o.v}')">
+          <input type="radio" name="del" value="${o.v}" ${coDelivery===o.v?'checked':''}>
+          <span style="font-size:1.3rem">${o.ico}</span>
+          <div><div class="co-opt-label">${o.l}</div><div class="co-opt-sub">${o.s}</div></div>
+          <span class="co-opt-price">${o.p}</span>
+        </label>`).join('')}
+    </div>
+    <div class="co-sec-title" style="margin-top:1.1rem">Contact</div>
+    <div class="co-row">
+      <div class="co-field"><label class="co-label">First Name <span>*</span></label><input class="co-input" id="cf1" placeholder="Giorgi"></div>
+      <div class="co-field"><label class="co-label">Last Name <span>*</span></label><input class="co-input" id="cf2" placeholder="Beridze"></div>
+    </div>
+    <div class="co-row">
+      <div class="co-field"><label class="co-label">Phone <span>*</span></label><input class="co-input" id="cf3" placeholder="+995 555 00 00 00" type="tel"></div>
+      <div class="co-field"><label class="co-label">Email</label><input class="co-input" id="cf4" placeholder="you@example.com" type="email"></div>
+    </div>
+    <div id="coAddrBlock">
+      <div class="co-row one"><div class="co-field"><label class="co-label">Address <span>*</span></label><input class="co-input" id="cf5" placeholder="Rustaveli Ave 23, Apt 5"></div></div>
+      <div class="co-row three">
+        <div class="co-field"><label class="co-label">City</label><select class="co-sel" id="cf6"><option>Tbilisi</option><option>Batumi</option><option>Kutaisi</option><option>Rustavi</option><option>Other</option></select></div>
+        <div class="co-field"><label class="co-label">District</label><input class="co-input" id="cf7" placeholder="Vake"></div>
+        <div class="co-field"><label class="co-label">Postal</label><input class="co-input" id="cf8" placeholder="0179"></div>
+      </div>
+    </div>
+    <div class="co-field" style="margin-top:.7rem"><label class="co-label">Note</label><input class="co-input" id="cf9" placeholder="Leave at door…"></div>`;
+  document.getElementById('coFoot').innerHTML=`
+    <span style="font-size:.78rem;color:var(--muted)">🔒 Secure checkout</span>
+    <button class="co-next" onclick="delNext()">Continue to Payment →</button>`;
+  updAddrVis();
+}
+
+function selDel(v){ coDelivery=v; document.querySelectorAll('.co-opt').forEach(el=>el.classList.toggle('sel',el.querySelector('input').value===v)); updAddrVis(); renderCoAside(); }
+function updAddrVis(){ const ab=document.getElementById('coAddrBlock'); if(ab)ab.style.display=coDelivery==='pickup'?'none':'block'; }
+
+function delNext(){
+  let ok=true;
+  ['cf1','cf2','cf3'].forEach(id=>{const el=document.getElementById(id);if(!el?.value.trim()){el?.classList.add('err');ok=false;}else el?.classList.remove('err');});
+  if(coDelivery!=='pickup'){const a=document.getElementById('cf5');if(!a?.value.trim()){a?.classList.add('err');ok=false;}else a?.classList.remove('err');}
+  if(!ok){showToast('⚠️ Fill in required fields');return;}
+  coStep=2;renderCo();
+}
+
+function renderPayment(){
+  document.getElementById('coMain').innerHTML=`
+    <div class="co-sec-title">Payment Method</div>
+    <div class="co-pay-tabs">
+      ${[{v:'card',l:'💳 Card'},{v:'bank',l:'🏦 Bank Transfer'},{v:'cash',l:'💵 Cash on Delivery'}].map(m=>`
+        <button class="co-pay-tab ${coPayMethod===m.v?'sel':''}" onclick="selPay('${m.v}')">${m.l}</button>`).join('')}
+    </div>
+    <div id="coPayFields"></div>
+    <div style="background:rgba(42,181,160,.08);border:1px solid rgba(42,181,160,.2);border-radius:9px;padding:.9rem;margin-top:1rem;font-size:.85rem;color:var(--teal)">
+      Total to pay: <strong>₾${cartSub()+delCost()}</strong> <span style="color:var(--muted);font-size:.78rem">· incl. 18% VAT</span>
+    </div>
+    <div style="margin-top:.9rem;padding:.85rem;background:var(--navy2);border-radius:9px;font-size:.78rem;color:var(--muted);line-height:1.6">🔒 Prototype — no real payment processed.</div>`;
+  renderPayFields();
+  document.getElementById('coFoot').innerHTML=`
+    <button class="co-back" onclick="coStep=1;renderCo()">← Back</button>
+    <button class="co-next" onclick="payNext()">Place Order →</button>`;
+}
+
+function selPay(v){ coPayMethod=v; document.querySelectorAll('.co-pay-tab').forEach(el=>el.classList.toggle('sel',el.textContent.includes(v==='card'?'Card':v==='bank'?'Bank':'Cash'))); renderPayFields(); }
+
+function renderPayFields(){
+  const el=document.getElementById('coPayFields'); if(!el)return;
+  if(coPayMethod==='card'){
+    el.innerHTML=`
+      <div class="co-row one" style="margin-top:.9rem"><div class="co-field"><label class="co-label">Cardholder <span>*</span></label><input class="co-input" id="pf1" placeholder="GIORGI BERIDZE"></div></div>
+      <div class="co-row one"><div class="co-field"><label class="co-label">Card Number <span>*</span></label><input class="co-input" id="pf2" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"></div></div>
+      <div class="co-row">
+        <div class="co-field"><label class="co-label">Expiry <span>*</span></label><input class="co-input" id="pf3" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"></div>
+        <div class="co-field"><label class="co-label">CVV <span>*</span></label><input class="co-input" id="pf4" placeholder="123" maxlength="4" type="password"></div>
+      </div>`;
+  } else if(coPayMethod==='bank'){
+    el.innerHTML=`<div style="margin-top:.9rem;padding:.9rem;border:1px solid var(--border);border-radius:9px;font-size:.86rem;line-height:1.9;color:var(--muted)"><div><strong style="color:var(--white)">Bank:</strong> TBC Bank Georgia</div><div><strong style="color:var(--white)">IBAN:</strong> GE29TB7194336080100003</div><div><strong style="color:var(--white)">Reference:</strong> ${coOrderNum}</div></div>`;
+  } else {
+    el.innerHTML=`<div style="margin-top:.9rem;padding:.9rem;background:var(--navy2);border-radius:9px;font-size:.86rem;color:var(--muted);line-height:1.6">💵 Pay in cash when the courier arrives. Tbilisi only.</div>`;
+  }
+}
+
+function fmtCard(el){ let v=el.value.replace(/\D/g,'').substring(0,16); el.value=v.replace(/(.{4})/g,'$1 ').trim(); }
+function fmtExp(el){ let v=el.value.replace(/\D/g,'').substring(0,4); if(v.length>=3)v=v.substring(0,2)+' / '+v.substring(2); el.value=v; }
+
+function payNext(){
+  if(coPayMethod==='card'){
+    let ok=true;
+    ['pf1','pf2','pf3','pf4'].forEach(id=>{const el=document.getElementById(id);if(!el?.value.trim()||(id==='pf2'&&el.value.replace(/\s/g,'').length<16)){el?.classList.add('err');ok=false;}else el?.classList.remove('err');});
+    if(!ok){showToast('⚠️ Complete card details');return;}
+  }
+  const btn=document.querySelector('#coFoot .co-next');
+  if(btn){btn.disabled=true;btn.textContent='Processing…';}
+  setTimeout(()=>{ coStep=3; cart={}; updateCartBadge(); renderCo(); },1400);
+}
+
+function renderConfirm(){
+  document.getElementById('coSteps').innerHTML='';
+  document.getElementById('coAside').style.display='none';
+  document.getElementById('coFoot').innerHTML='';
+  document.getElementById('coMain').innerHTML=`
+    <div class="co-confirm">
+      <div class="co-confirm-ico">🎉</div>
+      <h2>Order Placed!</h2>
+      <p>Thank you! Your EV accessories are on the way. You'll receive an SMS shortly.</p>
+      <div class="co-confirm-box">
+        <div class="co-cr"><span>Order</span><strong>${coOrderNum}</strong></div>
+        <div class="co-cr"><span>Delivery</span><strong>${coDelivery==='standard'?'Standard (2–4d)':coDelivery==='express'?'Express (next day)':'Hub Pickup (2h)'}</strong></div>
+        <div class="co-cr"><span>Payment</span><strong>${coPayMethod==='card'?'Card ending ****':coPayMethod==='bank'?'Bank Transfer':'Cash on Delivery'}</strong></div>
+        <div class="co-cr bold"><span>Total</span><span style="color:var(--teal)">Prototype — no charge</span></div>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:1.3rem">🧪 Design Sprint prototype — no real order was placed.</div>
+      <div class="co-cacts">
+        <button class="co-cact co-cact-p" onclick="closeCheckout()">Continue Shopping</button>
+        <button class="co-cact co-cact-s" onclick="closeCheckout();showToast('📦 Track order coming soon!')">Track Order</button>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════════
+window.addEventListener('resize', resizeMap);
+resizeMap();
+centerMe();
+updateStats();
+renderStationList();
+mapLoop();
+renderProducts(PRODUCTS);
+</script>
 </body>
 </html>
