@@ -321,34 +321,44 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .result-count strong { color: var(--navy); }
 .sort-sel { border: 1.5px solid var(--border-lt); border-radius: 8px; padding: 7px 11px; font-family: var(--font); font-size: .82rem; color: var(--navy); background: var(--white); outline: none; cursor: pointer; }
 .sort-sel:focus { border-color: var(--teal); }
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1.1rem; }
+.product-grid { display: flex; flex-direction: column; gap: .85rem; }
 
-/* product card */
+/* product card — horizontal list style */
 .pcard {
   background: var(--white); border-radius: 14px; border: 1px solid var(--border-lt);
-  overflow: hidden; cursor: pointer;
-  transition: transform .17s, box-shadow .17s, border-color .17s;
+  overflow: hidden; cursor: pointer; display: flex; align-items: stretch;
+  transition: box-shadow .18s, border-color .18s, transform .18s;
   animation: fadeUp .3s ease both;
 }
-.pcard:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(27,42,61,.1); border-color: var(--teal); }
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
-.pcard-img { width:100%; aspect-ratio:1.3/1; display:flex; align-items:center; justify-content:center; font-size:3.2rem; position:relative; transition:transform .18s; }
-.pcard:hover .pcard-img { transform: scale(1.04); }
-.pcard-badge { position:absolute; top:9px; left:9px; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:99px; letter-spacing:.04em; }
+.pcard:hover { box-shadow: 0 6px 24px rgba(27,42,61,.1); border-color: var(--teal); transform: translateY(-2px); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+
+/* left image placeholder block */
+.pcard-img {
+  width: 130px; min-width: 130px; display: flex; align-items: center; justify-content: center;
+  position: relative; flex-shrink: 0; overflow: hidden;
+}
+.pcard-img svg { width: 68px; height: 68px; }
+.pcard-badge { position:absolute; top:8px; left:8px; font-size:.62rem; font-weight:700; padding:3px 8px; border-radius:99px; letter-spacing:.04em; z-index:1; }
 .pcard-badge.popular { background: var(--orange); color:#fff; }
 .pcard-badge.new     { background: var(--green);  color:#fff; }
 .pcard-badge.sale    { background: var(--red);    color:#fff; }
-.verified-tag { position:absolute; top:9px; right:9px; background:rgba(255,255,255,.95); border:1px solid var(--border-lt); border-radius:99px; padding:2px 8px; font-size:.65rem; font-weight:600; color:var(--teal); }
-.pcard-body { padding: .9rem; }
-.pcard-cat  { font-size:.7rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.28rem; }
-.pcard-name { font-size:.9rem; font-weight:600; color:var(--navy); margin-bottom:.28rem; line-height:1.3; }
-.pcard-compat { font-size:.75rem; color:var(--muted-lt); margin-bottom:.65rem; line-height:1.4; }
-.pcard-foot { display:flex; align-items:center; justify-content:space-between; }
-.pcard-price { font-size:1rem; font-weight:700; color:var(--navy); font-family:var(--mono); }
-.pcard-price .old { font-size:.74rem; color:var(--muted-lt); text-decoration:line-through; font-weight:400; display:block; }
-.pcard-stars { font-size:.72rem; color:var(--orange); margin-bottom:.5rem; }
+.verified-tag { position:absolute; bottom:8px; left:8px; background:rgba(255,255,255,.96); border:1px solid var(--border-lt); border-radius:99px; padding:2px 7px; font-size:.6rem; font-weight:700; color:var(--teal); white-space:nowrap; }
+
+/* right content */
+.pcard-body { padding: 1rem 1.1rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+.pcard-top  { margin-bottom: .5rem; }
+.pcard-cat  { font-size:.68rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.22rem; }
+.pcard-name { font-size:1rem; font-weight:700; color:var(--navy); line-height:1.25; margin-bottom:.3rem; }
+.pcard-desc-short { font-size:.82rem; color:var(--muted-lt); line-height:1.5; margin-bottom:.45rem; display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.pcard-compat { font-size:.74rem; color:var(--muted-lt); line-height:1.4; margin-bottom: .55rem; }
+.pcard-compat strong { color: var(--navy); font-weight: 600; }
+.pcard-stars { font-size:.75rem; color:var(--orange); margin-bottom:.55rem; }
 .pcard-stars span { color:var(--muted-lt); }
-.add-btn { background:var(--teal); color:#fff; border:none; border-radius:8px; padding:7px 13px; font-size:.78rem; font-weight:600; font-family:var(--font); cursor:pointer; transition:all .14s; }
+.pcard-foot { display:flex; align-items:center; justify-content:space-between; gap: .75rem; }
+.pcard-price { font-size:1.1rem; font-weight:700; color:var(--navy); font-family:var(--mono); display:flex; align-items:baseline; gap:.5rem; }
+.pcard-price .old { font-size:.78rem; color:var(--muted-lt); text-decoration:line-through; font-weight:400; font-family:var(--font); }
+.add-btn { background:var(--teal); color:#fff; border:none; border-radius:9px; padding:8px 18px; font-size:.82rem; font-weight:600; font-family:var(--font); cursor:pointer; transition:all .14s; white-space:nowrap; }
 .add-btn:hover { background:var(--teal-dk); }
 .add-btn:active { transform:scale(.95); }
 .add-btn.added { background:var(--green); }
@@ -370,7 +380,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .d-close:hover { background:var(--navy2); }
 .drawer-items { flex:1; overflow-y:auto; padding:.9rem 1.2rem; }
 .cart-item { display:flex; gap:11px; padding:12px 0; border-bottom:1px solid var(--border); align-items:center; }
-.ci-ico { font-size:1.8rem; width:50px; height:50px; background:var(--navy2); border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border); }
+.ci-ico { width:50px; height:50px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border-lt); overflow:hidden; padding:6px; }
 .ci-info { flex:1; }
 .ci-name  { font-size:.84rem; font-weight:600; color:var(--white); margin-bottom:2px; }
 .ci-price { font-size:.82rem; color:var(--teal); font-weight:600; font-family:var(--mono); }
@@ -396,7 +406,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
 .modal { background:var(--panel); border:1px solid var(--border); border-radius:18px; width:100%; max-width:520px; padding:1.75rem; position:relative; transform:scale(.93); transition:transform .22s cubic-bezier(.34,1.56,.64,1); max-height:88vh; overflow-y:auto; }
 .modal-overlay.show .modal { transform:scale(1); }
 .modal-close { position:absolute; top:.9rem; right:.9rem; background:var(--navy3); border:1px solid var(--border); border-radius:7px; width:30px; height:30px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
-.modal-ico   { font-size:4rem; text-align:center; padding:.9rem; background:var(--navy2); border-radius:11px; margin-bottom:1.1rem; }
+.modal-ico   { text-align:center; background:var(--navy2); border-radius:11px; margin-bottom:1.1rem; display:flex; align-items:center; justify-content:center; min-height:100px; }
 .modal-cat   { font-size:.74rem; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.07em; }
 .modal-name  { font-size:1.3rem; font-weight:700; margin:.3rem 0 .45rem; color:var(--white); }
 .modal-desc  { font-size:.87rem; color:var(--muted); line-height:1.6; margin-bottom:.9rem; }
@@ -614,10 +624,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--fon
       <div class="filter-card">
         <div class="filter-title">Category</div>
         <label class="filter-item"><input type="radio" name="cat" value="all" checked onchange="filterShop()"> All Products</label>
-        <label class="filter-item"><input type="radio" name="cat" value="cables" onchange="filterShop()"> 🔌 Cables</label>
-        <label class="filter-item"><input type="radio" name="cat" value="chargers" onchange="filterShop()"> ⚡ Chargers</label>
-        <label class="filter-item"><input type="radio" name="cat" value="tools" onchange="filterShop()"> 🔧 Tools</label>
-        <label class="filter-item"><input type="radio" name="cat" value="protection" onchange="filterShop()"> 🛡️ Protection</label>
+        <label class="filter-item"><input type="radio" name="cat" value="cables" onchange="filterShop()"> Cables &amp; Adapters</label>
+        <label class="filter-item"><input type="radio" name="cat" value="chargers" onchange="filterShop()"> Home Chargers</label>
+        <label class="filter-item"><input type="radio" name="cat" value="tools" onchange="filterShop()"> Tools &amp; Monitors</label>
+        <label class="filter-item"><input type="radio" name="cat" value="protection" onchange="filterShop()"> Protection</label>
       </div>
       <div class="filter-card">
         <div class="filter-title">Max Price (₾)</div>
@@ -870,7 +880,7 @@ canvas.addEventListener('touchend',()=>dragging=false);
 function handleMapClick(mx,my){
   for(const st of STATIONS){
     const[px,py]=w2s(st.cx,st.cy);
-    if(Math.hypot(mx-px,my-py)<20*mapScale){selectStation(st);return;}
+    if(Math.hypot(mx-px,my-py)<26*mapScale){selectStation(st);return;}
   }
   closeDetail();
 }
@@ -915,7 +925,7 @@ function renderStationList(){
     const lbl=allBroken?'Offline':free>0?`${free} free`:'Busy';
     const act=activeStation&&activeStation.id===st.id;
     return`<div class="srow ${act?'active':''}" onclick="selectStation(STATIONS.find(s=>s.id==${st.id}))">
-      <div class="srow-ico" style="background:${bc}">${st.fast?'⚡':'🔌'}</div>
+      <div class="srow-ico" style="background:${bc}"><svg width='18' height='18' viewBox='0 0 18 18'><circle cx='9' cy='9' r='6' fill='${tc}' opacity='.8'/><circle cx='9' cy='9' r='3' fill='${tc}'/></svg></div>
       <div class="srow-info"><div class="srow-name">${st.name}</div><div class="srow-sub">${st.area}·${st.power}·★${st.stars}</div></div>
       <span class="srow-badge" style="background:${bc};color:${tc}">${lbl}</span>
     </div>`;
@@ -1022,10 +1032,53 @@ function filterShop(){
   renderProducts(list);
 }
 
+// SVG product image placeholders — no emojis, clean visual blocks
+function productSVG(cat, id) {
+  const palettes = {
+    cables:     { bg:'#E8F7F5', stroke:'#2AB5A0', lines:['#2AB5A0','#1A8F7E'] },
+    chargers:   { bg:'#EBF4FF', stroke:'#4A90D9', lines:['#4A90D9','#2563EB'] },
+    tools:      { bg:'#FFF8EC', stroke:'#F5A623', lines:['#F5A623','#D97706'] },
+    protection: { bg:'#F0EEFF', stroke:'#8B7FD4', lines:['#8B7FD4','#6D4FD4'] },
+  };
+  const p = palettes[cat] || palettes.cables;
+  // Each category gets a distinct abstract geometric illustration
+  const shapes = {
+    cables: `
+      <rect x="18" y="30" width="32" height="8" rx="4" fill="${p.stroke}" opacity=".15"/>
+      <rect x="18" y="30" width="32" height="8" rx="4" fill="none" stroke="${p.stroke}" stroke-width="1.5"/>
+      <circle cx="18" cy="34" r="5" fill="${p.stroke}" opacity=".9"/>
+      <circle cx="50" cy="34" r="5" fill="${p.stroke}" opacity=".9"/>
+      <path d="M10 34 Q6 34 6 30 L6 22 Q6 16 12 16 L56 16 Q62 16 62 22 L62 30 Q62 34 58 34" fill="none" stroke="${p.lines[1]}" stroke-width="2" stroke-dasharray="3 2"/>
+      <rect x="24" y="46" width="20" height="14" rx="3" fill="${p.stroke}" opacity=".18"/>
+      <rect x="28" y="50" width="12" height="2" rx="1" fill="${p.stroke}"/>
+      <rect x="28" y="54" width="8" height="2" rx="1" fill="${p.stroke}" opacity=".6"/>`,
+    chargers: `
+      <rect x="16" y="12" width="36" height="44" rx="6" fill="${p.stroke}" opacity=".12"/>
+      <rect x="16" y="12" width="36" height="44" rx="6" fill="none" stroke="${p.stroke}" stroke-width="1.5"/>
+      <path d="M30 28 L26 38 L32 38 L28 50 L42 32 L34 32 L38 20 Z" fill="${p.stroke}" opacity=".85"/>
+      <circle cx="34" cy="8" r="3" fill="${p.lines[1]}" opacity=".6"/>
+      <circle cx="34" cy="62" r="3" fill="${p.lines[1]}" opacity=".6"/>`,
+    tools: `
+      <circle cx="34" cy="34" r="20" fill="${p.stroke}" opacity=".1"/>
+      <circle cx="34" cy="34" r="20" fill="none" stroke="${p.stroke}" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <rect x="28" y="22" width="12" height="6" rx="2" fill="${p.stroke}" opacity=".8"/>
+      <rect x="30" y="28" width="8" height="16" rx="1" fill="${p.stroke}" opacity=".6"/>
+      <rect x="26" y="44" width="16" height="4" rx="2" fill="${p.stroke}" opacity=".8"/>
+      <circle cx="34" cy="34" r="4" fill="${p.lines[1]}" opacity=".9"/>`,
+    protection: `
+      <path d="M34 14 L54 22 L54 38 Q54 50 34 58 Q14 50 14 38 L14 22 Z" fill="${p.stroke}" opacity=".12"/>
+      <path d="M34 14 L54 22 L54 38 Q54 50 34 58 Q14 50 14 38 L14 22 Z" fill="none" stroke="${p.stroke}" stroke-width="1.5"/>
+      <path d="M24 34 L30 40 L44 28" fill="none" stroke="${p.stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  };
+  return `<svg viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    ${shapes[cat] || shapes.cables}
+  </svg>`;
+}
+
 function renderProducts(list){
   document.getElementById('resultCount').innerHTML=`Showing <strong>${list.length}</strong> products`;
   const g=document.getElementById('productGrid');
-  if(!list.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted-lt)">No products match 🤷</div>';return;}
+  if(!list.length){g.innerHTML='<div style="padding:3rem;text-align:center;color:var(--muted-lt)">No products match your filters</div>';return;}
   g.innerHTML='';
   list.forEach((p,i)=>{
     const stars='★'.repeat(Math.floor(p.stars))+(p.stars%1>=.5?'½':'')+'☆'.repeat(5-Math.ceil(p.stars));
@@ -1034,17 +1087,23 @@ function renderProducts(list){
     d.innerHTML=`
       <div class="pcard-img" style="background:${catColor(p.cat)}">
         ${p.badge?`<div class="pcard-badge ${p.badge}">${p.badge.toUpperCase()}</div>`:''}
-        <div class="verified-tag">✅ Verified</div>
-        ${p.ico}
+        <div class="verified-tag">✓ Verified</div>
+        ${productSVG(p.cat, p.id)}
       </div>
       <div class="pcard-body">
-        <div class="pcard-cat">${catLabel(p.cat)}</div>
-        <div class="pcard-name">${p.name}</div>
-        <div class="pcard-stars">${stars} <span>(${p.reviews})</span></div>
-        <div class="pcard-compat">🚗 ${p.compat}</div>
+        <div class="pcard-top">
+          <div class="pcard-cat">${catLabel(p.cat)}</div>
+          <div class="pcard-name">${p.name}</div>
+          <div class="pcard-desc-short">${p.desc}</div>
+          <div class="pcard-compat"><strong>Fits:</strong> ${p.compat}</div>
+          <div class="pcard-stars">${stars} <span>${p.stars} · ${p.reviews} reviews</span></div>
+        </div>
         <div class="pcard-foot">
-          <div class="pcard-price">${p.old?`<span class="old">₾${p.old}</span>`:''} ₾${p.price}</div>
-          <button class="add-btn" id="ab${p.id}" onclick="addToCart(event,${p.id})">+ Add</button>
+          <div class="pcard-price">
+            ₾${p.price}
+            ${p.old?`<span class="old">₾${p.old}</span>`:''}
+          </div>
+          <button class="add-btn" id="ab${p.id}" onclick="addToCart(event,${p.id})">Add to Cart</button>
         </div>
       </div>`;
     d.addEventListener('click',e=>{ if(!e.target.classList.contains('add-btn'))openModal(p); });
@@ -1060,7 +1119,7 @@ function addToCart(e,id){
   updateCartBadge();
   const btn=document.getElementById('ab'+id);
   if(btn){btn.textContent='✓ Added';btn.classList.add('added');setTimeout(()=>{btn.textContent='+ Add';btn.classList.remove('added');},1200);}
-  showToast(`${PRODUCTS.find(x=>x.id===id).ico} Added to cart`);
+  showToast("Added to cart: " + PRODUCTS.find(x=>x.id===id).name);
 }
 
 function updateCartBadge(){
@@ -1086,7 +1145,7 @@ function renderDrawer(){
   items.innerHTML=ids.map(id=>{
     const p=PRODUCTS.find(x=>x.id==id);
     return`<div class="cart-item">
-      <div class="ci-ico">${p.ico}</div>
+      <div class="ci-ico" style="background:${catColor(p.cat)}">${productSVG(p.cat,p.id)}</div>
       <div class="ci-info">
         <div class="ci-name">${p.name}</div>
         <div class="ci-price">₾${p.price}</div>
@@ -1096,7 +1155,7 @@ function renderDrawer(){
           <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
         </div>
       </div>
-      <button class="rm-btn" onclick="removeItem(${p.id})">🗑</button>
+      <button class="rm-btn" onclick="removeItem(${p.id})">✕</button>
     </div>`;
   }).join('');
   const sub=ids.reduce((s,id)=>s+PRODUCTS.find(x=>x.id==id).price*cart[id],0);
@@ -1113,16 +1172,23 @@ function openModal(p){
   const stars='★'.repeat(Math.floor(p.stars))+'☆'.repeat(5-Math.floor(p.stars));
   document.getElementById('modalContent').innerHTML=`
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-ico">${p.ico}</div>
-    <div class="modal-cat">${catLabel(p.cat)}</div>
+    <div class="modal-ico" style="background:${catColor(p.cat)};display:flex;align-items:center;justify-content:center;border-radius:11px;padding:.9rem;margin-bottom:1.1rem;">
+      ${productSVG(p.cat, p.id)}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:.35rem;">
+      <div class="modal-cat">${catLabel(p.cat)}</div>
+      ${p.badge?`<span style="background:${p.badge==='sale'?'var(--red)':p.badge==='new'?'var(--green)':'var(--orange)'};color:#fff;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.04em">${p.badge.toUpperCase()}</span>`:''}
+    </div>
     <div class="modal-name">${p.name}</div>
-    <div style="color:var(--orange);margin-bottom:.5rem">${stars} <span style="color:var(--muted);font-size:.82rem">${p.stars} · ${p.reviews} reviews</span></div>
+    <div style="color:var(--orange);margin-bottom:.6rem;font-size:.88rem">${stars} <span style="color:var(--muted);font-size:.8rem">${p.stars} · ${p.reviews} reviews</span></div>
     <div class="modal-desc">${p.desc}</div>
-    <div class="modal-compat">✅ Compatible: ${p.compat}</div>
-    ${p.badge==='sale'&&p.old?`<div style="font-size:.8rem;color:var(--red);margin-bottom:.5rem">🔥 Sale — was ₾${p.old}</div>`:''}
+    <div class="modal-compat" style="display:flex;gap:6px;align-items:flex-start">
+      <span style="color:var(--teal);font-weight:700;flex-shrink:0">Fits:</span> ${p.compat}
+    </div>
+    ${p.badge==='sale'&&p.old?`<div style="font-size:.82rem;color:var(--red);margin:.4rem 0;font-weight:600">Was ₾${p.old} — save ₾${p.old-p.price}</div>`:''}
     <div class="modal-foot">
       <div class="modal-price">₾${p.price}</div>
-      <button class="modal-add" onclick="addToCart(event,${p.id});closeModal()">+ Add to Cart</button>
+      <button class="modal-add" onclick="addToCart(event,${p.id});closeModal()">Add to Cart</button>
     </div>`;
   document.getElementById('modalOverlay').classList.add('show');
 }
@@ -1190,22 +1256,22 @@ function renderDelivery(){
     </div>
     <div class="co-sec-title" style="margin-top:1.1rem">Contact</div>
     <div class="co-row">
-      <div class="co-field"><label class="co-label">First Name <span>*</span></label><input class="co-input" id="cf1" placeholder="Giorgi"></div>
-      <div class="co-field"><label class="co-label">Last Name <span>*</span></label><input class="co-input" id="cf2" placeholder="Beridze"></div>
+      <div class="co-field"><label class="co-label">First Name <span>*</span></label><input class="co-input" id="cf1" placeholder="First name"></div>
+      <div class="co-field"><label class="co-label">Last Name <span>*</span></label><input class="co-input" id="cf2" placeholder="Last name"></div>
     </div>
     <div class="co-row">
-      <div class="co-field"><label class="co-label">Phone <span>*</span></label><input class="co-input" id="cf3" placeholder="+995 555 00 00 00" type="tel"></div>
-      <div class="co-field"><label class="co-label">Email</label><input class="co-input" id="cf4" placeholder="you@example.com" type="email"></div>
+      <div class="co-field"><label class="co-label">Phone <span>*</span></label><input class="co-input" id="cf3" placeholder="Your phone number" type="tel"></div>
+      <div class="co-field"><label class="co-label">Email</label><input class="co-input" id="cf4" placeholder="Your email address" type="email"></div>
     </div>
     <div id="coAddrBlock">
-      <div class="co-row one"><div class="co-field"><label class="co-label">Address <span>*</span></label><input class="co-input" id="cf5" placeholder="Rustaveli Ave 23, Apt 5"></div></div>
+      <div class="co-row one"><div class="co-field"><label class="co-label">Address <span>*</span></label><input class="co-input" id="cf5" placeholder="Street address"></div></div>
       <div class="co-row three">
         <div class="co-field"><label class="co-label">City</label><select class="co-sel" id="cf6"><option>Tbilisi</option><option>Batumi</option><option>Kutaisi</option><option>Rustavi</option><option>Other</option></select></div>
-        <div class="co-field"><label class="co-label">District</label><input class="co-input" id="cf7" placeholder="Vake"></div>
-        <div class="co-field"><label class="co-label">Postal</label><input class="co-input" id="cf8" placeholder="0179"></div>
+        <div class="co-field"><label class="co-label">District</label><input class="co-input" id="cf7" placeholder="District / area"></div>
+        <div class="co-field"><label class="co-label">Postal</label><input class="co-input" id="cf8" placeholder="Postal code"></div>
       </div>
     </div>
-    <div class="co-field" style="margin-top:.7rem"><label class="co-label">Note</label><input class="co-input" id="cf9" placeholder="Leave at door…"></div>`;
+    <div class="co-field" style="margin-top:.7rem"><label class="co-label">Note</label><input class="co-input" id="cf9" placeholder="Delivery note (optional)"></div>`;
   document.getElementById('coFoot').innerHTML=`
     <span style="font-size:.78rem;color:var(--muted)">🔒 Secure checkout</span>
     <button class="co-next" onclick="delNext()">Continue to Payment →</button>`;
@@ -1247,8 +1313,8 @@ function renderPayFields(){
   const el=document.getElementById('coPayFields'); if(!el)return;
   if(coPayMethod==='card'){
     el.innerHTML=`
-      <div class="co-row one" style="margin-top:.9rem"><div class="co-field"><label class="co-label">Cardholder <span>*</span></label><input class="co-input" id="pf1" placeholder="GIORGI BERIDZE"></div></div>
-      <div class="co-row one"><div class="co-field"><label class="co-label">Card Number <span>*</span></label><input class="co-input" id="pf2" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"></div></div>
+      <div class="co-row one" style="margin-top:.9rem"><div class="co-field"><label class="co-label">Cardholder <span>*</span></label><input class="co-input" id="pf1" placeholder="FULL NAME ON CARD"></div></div>
+      <div class="co-row one"><div class="co-field"><label class="co-label">Card Number <span>*</span></label><input class="co-input" id="pf2" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="fmtCard(this)"></div></div>
       <div class="co-row">
         <div class="co-field"><label class="co-label">Expiry <span>*</span></label><input class="co-input" id="pf3" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"></div>
         <div class="co-field"><label class="co-label">CVV <span>*</span></label><input class="co-input" id="pf4" placeholder="123" maxlength="4" type="password"></div>
